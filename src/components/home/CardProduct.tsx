@@ -1,109 +1,38 @@
-import { FlatList, StyleSheet, View } from "react-native";
+import { useProducts } from "@/context/ProductsContext";
+import { storageLabels } from "@/data/products";
+import { formatRemainingTime } from "@/utils/expiration";
+import { router } from "expo-router";
+import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 
-interface FoodItem {
-  id: number;
-  emoji: string;
-  name: string;
-  quantity: number;
-  storage: "Fridge" | "Freezer" | "Pantry" | "Autre";
-  daysLeft: number;
-  category: string;
-}
-const FOOD_ITEMS: FoodItem[] = [
-  {
-    id: 1,
-    emoji: "🥛",
-    name: "Oat Milk",
-    quantity: 3,
-    storage: "Fridge",
-    daysLeft: 2,
-    category: "Dairy",
-  },
-  {
-    id: 2,
-    emoji: "🫐",
-    name: "Blueberries",
-    quantity: 1,
-    storage: "Fridge",
-    daysLeft: 4,
-    category: "Fruit",
-  },
-  {
-    id: 3,
-    emoji: "🥑",
-    name: "Avocados",
-    quantity: 2,
-    storage: "Pantry",
-    daysLeft: 6,
-    category: "Vegetable",
-  },
-  {
-    id: 4,
-    emoji: "🧀",
-    name: "Parmesan Block",
-    quantity: 1,
-    storage: "Fridge",
-    daysLeft: 18,
-    category: "Dairy",
-  },
-  {
-    id: 5,
-    emoji: "🍗",
-    name: "Chicken Breast",
-    quantity: 4,
-    storage: "Freezer",
-    daysLeft: 1,
-    category: "Meat",
-  },
-  {
-    id: 6,
-    emoji: "🥚",
-    name: "Free Range Eggs",
-    quantity: 12,
-    storage: "Fridge",
-    daysLeft: 10,
-    category: "Dairy",
-  },
-  {
-    id: 7,
-    emoji: "🫙",
-    name: "Greek Yogurt",
-    quantity: 2,
-    storage: "Fridge",
-    daysLeft: 3,
-    category: "Dairy",
-  },
-  {
-    id: 8,
-    emoji: "🥦",
-    name: "Broccoli",
-    quantity: 1,
-    storage: "Fridge",
-    daysLeft: 5,
-    category: "Vegetable",
-  },
-];
-
-const storageLabels: Record<FoodItem["storage"], string> = {
-  Fridge: "Réfrigérateur",
-  Freezer: "Congélateur",
-  Pantry: "Garde-manger",
-  Autre: "Autre",
-};
-
 export default function CardProduct() {
+  const { products } = useProducts();
+
   return (
     <FlatList
-      data={FOOD_ITEMS}
+      data={products}
       keyExtractor={(item) => item.id.toString()}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => {
         const isUrgent = item.daysLeft <= 3;
+        const remainingTime = formatRemainingTime(item.daysLeft);
 
         return (
-          <View style={styles.card}>
+          <Pressable
+            accessibilityLabel={`Voir les détails de ${item.name}`}
+            accessibilityRole="button"
+            onPress={() =>
+              router.push({
+                pathname: "/product/[id]",
+                params: { id: item.id },
+              })
+            }
+            style={({ pressed }) => [
+              styles.card,
+              pressed && styles.pressedCard,
+            ]}
+          >
             <View style={styles.emojiContainer}>
               <AppText style={styles.emoji}>{item.emoji}</AppText>
             </View>
@@ -120,18 +49,18 @@ export default function CardProduct() {
 
             <View style={[styles.expiry, isUrgent && styles.urgentExpiry]}>
               <AppText
-                weight="bold"
+                weight="extraBold"
                 style={[styles.days, isUrgent && styles.urgentDays]}
               >
-                {item.daysLeft} j
+                {remainingTime.value}
               </AppText>
               <AppText
                 style={[styles.expiryLabel, isUrgent && styles.urgentDays]}
               >
-                restant{item.daysLeft > 1 ? "s" : ""}
+                {remainingTime.label}
               </AppText>
             </View>
-          </View>
+          </Pressable>
         );
       }}
     />
@@ -155,6 +84,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+  },
+  pressedCard: {
+    opacity: 0.82,
+    transform: [{ scale: 0.99 }],
   },
   emojiContainer: {
     alignItems: "center",
@@ -180,7 +113,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   expiry: {
-    alignItems: "flex-end",
+    alignItems: "center",
     backgroundColor: "#e7f5ed",
     borderRadius: 10,
     minWidth: 58,
@@ -192,7 +125,7 @@ const styles = StyleSheet.create({
   },
   days: {
     color: "#00975d",
-    fontSize: 14,
+    fontSize: 18,
   },
   urgentDays: {
     color: "#d94c3d",

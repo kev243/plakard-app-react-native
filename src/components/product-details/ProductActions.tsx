@@ -1,0 +1,77 @@
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, StyleSheet } from "react-native";
+import { AppText } from "../shared/AppText";
+
+type Props = {
+  onDelete: () => void;
+  onEdit: () => void;
+};
+
+export function ProductActions({ onDelete, onEdit }: Props) {
+  return (
+    <>
+      <ActionButton
+        icon="pencil-outline"
+        label="Modifier le produit"
+        onPress={onEdit}
+      />
+      <ActionButton
+        destructive
+        icon="trash-outline"
+        label="Supprimer le produit"
+        onPress={onDelete}
+      />
+    </>
+  );
+}
+
+type ActionButtonProps = {
+  destructive?: boolean;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+  onPress: () => void;
+};
+
+function ActionButton({
+  destructive = false,
+  icon,
+  label,
+  onPress,
+}: ActionButtonProps) {
+  const color = destructive ? "#D94C3D" : "#FEFEFE";
+  return (
+    <Pressable
+      accessibilityRole="button"
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        destructive ? styles.deleteButton : styles.editButton,
+        pressed && styles.pressed,
+      ]}
+    >
+      <Ionicons name={icon} size={20} color={color} />
+      <AppText
+        weight="bold"
+        style={[styles.text, destructive && styles.deleteText]}
+      >
+        {label}
+      </AppText>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    alignItems: "center",
+    borderRadius: 16,
+    flexDirection: "row",
+    gap: 9,
+    justifyContent: "center",
+    minHeight: 54,
+  },
+  editButton: { backgroundColor: "#11181E" },
+  deleteButton: { borderColor: "#F1C5BF", borderWidth: 1 },
+  text: { color: "#FEFEFE", fontSize: 15 },
+  deleteText: { color: "#D94C3D" },
+  pressed: { opacity: 0.7 },
+});
