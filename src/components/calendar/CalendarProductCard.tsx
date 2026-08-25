@@ -3,6 +3,7 @@ import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   product: FoodItem;
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export function CalendarProductCard({ product, onPress }: Props) {
+  const { colors } = useTheme();
   const daysLeft = getDaysUntil(product.expirationDate);
   const status = getExpirationStatus(daysLeft);
   const remaining = formatRemainingTime(daysLeft);
@@ -19,16 +21,16 @@ export function CalendarProductCard({ product, onPress }: Props) {
       accessibilityLabel={`Voir les détails de ${product.name}`}
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.card, { backgroundColor: colors.card }, pressed && styles.pressed]}
     >
-      <View style={styles.emojiContainer}>
+      <View style={[styles.emojiContainer, { backgroundColor: colors.surface }]}>
         <AppText style={styles.emoji}>{product.emoji}</AppText>
       </View>
       <View style={styles.details}>
         <AppText weight="bold" style={styles.name}>
           {product.name}
         </AppText>
-        <AppText style={styles.meta}>
+        <AppText style={[styles.meta, { color: colors.textSecondary }]}>
           {product.quantity} {product.quantity > 1 ? "unités" : "unité"} •{" "}
           {storageLabels[product.storage]}
         </AppText>
@@ -53,7 +55,6 @@ export function CalendarProductCard({ product, onPress }: Props) {
 const styles = StyleSheet.create({
   card: {
     alignItems: "center",
-    backgroundColor: "#FEFEFE",
     borderRadius: 18,
     elevation: 2,
     flexDirection: "row",
@@ -67,7 +68,6 @@ const styles = StyleSheet.create({
   pressed: { opacity: 0.8, transform: [{ scale: 0.99 }] },
   emojiContainer: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 13,
     height: 52,
     justifyContent: "center",
@@ -75,8 +75,8 @@ const styles = StyleSheet.create({
   },
   emoji: { fontSize: 28 },
   details: { flex: 1, marginLeft: 12 },
-  name: { color: "#11181E", fontSize: 15 },
-  meta: { color: "#7F8385", fontSize: 11, marginTop: 4 },
+  name: { fontSize: 15 },
+  meta: { fontSize: 11, marginTop: 4 },
   expiryDetails: { alignItems: "center", flexDirection: "row", gap: 4 },
   remaining: { color: "#00975D", fontSize: 18 },
   warningText: { color: "#C58A00" },

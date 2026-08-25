@@ -7,9 +7,11 @@ import { getDateKey } from "@/utils/expiration";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function CalendarScreen() {
   const { products } = useProducts();
+  const { colors } = useTheme();
   const [selectedDate, setSelectedDate] = useState(() => new Date());
   const [displayedMonth, setDisplayedMonth] = useState(
     () => new Date(new Date().getFullYear(), new Date().getMonth(), 1),
@@ -48,7 +50,7 @@ export default function CalendarScreen() {
           <AppText weight="extraBold" style={styles.title}>
             Calendrier
           </AppText>
-          <AppText style={styles.subtitle}>
+          <AppText style={[styles.subtitle, { color: colors.textSecondary }]}>
             Retrouve les dates d’expiration de tes produits
           </AppText>
         </View>
@@ -65,7 +67,7 @@ export default function CalendarScreen() {
           <AppText weight="bold" style={styles.selectedDate}>
             {selectedDateLabel}
           </AppText>
-          <AppText style={styles.productCount}>
+          <AppText style={[styles.productCount, { color: colors.textMuted }]}>
             {selectedProducts.length > 0
               ? `${selectedProducts.length} produit${selectedProducts.length > 1 ? "s" : ""} à surveiller`
               : "Aucune expiration prévue"}
@@ -92,7 +94,7 @@ export default function CalendarScreen() {
               <AppText weight="bold" style={styles.emptyTitle}>
                 Rien à signaler
               </AppText>
-              <AppText style={styles.emptyText}>
+              <AppText style={[styles.emptyText, { color: colors.textMuted }]}>
                 Sélectionne un jour marqué pour voir les produits concernés.
               </AppText>
             </View>
@@ -106,11 +108,11 @@ export default function CalendarScreen() {
 const styles = StyleSheet.create({
   content: { paddingBottom: 28 },
   header: { paddingBottom: 20, paddingTop: 8 },
-  title: { color: "#11181E", fontSize: 25 },
-  subtitle: { color: "#7F8385", fontSize: 14, marginTop: 4 },
+  title: { fontSize: 25 },
+  subtitle: { fontSize: 14, marginTop: 4 },
   productsSection: { marginTop: 22 },
-  selectedDate: { color: "#11181E", fontSize: 18, textTransform: "capitalize" },
-  productCount: { color: "#8B8F91", fontSize: 12, marginTop: 3 },
+  selectedDate: { fontSize: 18, textTransform: "capitalize" },
+  productCount: { fontSize: 12, marginTop: 3 },
   productList: { gap: 10, marginTop: 14 },
   emptyState: {
     alignItems: "center",
@@ -118,9 +120,8 @@ const styles = StyleSheet.create({
     paddingVertical: 34,
   },
   emptyIcon: { fontSize: 34 },
-  emptyTitle: { color: "#11181E", fontSize: 16, marginTop: 10 },
+  emptyTitle: { fontSize: 16, marginTop: 10 },
   emptyText: {
-    color: "#8B8F91",
     fontSize: 13,
     lineHeight: 18,
     marginTop: 5,

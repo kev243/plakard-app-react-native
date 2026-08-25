@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   onDelete: () => void;
@@ -38,21 +39,27 @@ function ActionButton({
   label,
   onPress,
 }: ActionButtonProps) {
-  const color = destructive ? "#D94C3D" : "#FEFEFE";
+  const { colors } = useTheme();
+  const color = destructive ? "#D94C3D" : colors.selectedText;
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        destructive ? styles.deleteButton : styles.editButton,
+        destructive
+          ? styles.deleteButton
+          : [styles.editButton, { backgroundColor: colors.selected }],
         pressed && styles.pressed,
       ]}
     >
       <Ionicons name={icon} size={20} color={color} />
       <AppText
         weight="bold"
-        style={[styles.text, destructive && styles.deleteText]}
+        style={[
+          styles.text,
+          { color: destructive ? "#D94C3D" : colors.selectedText },
+        ]}
       >
         {label}
       </AppText>
@@ -69,9 +76,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 54,
   },
-  editButton: { backgroundColor: "#11181E" },
+  editButton: {},
   deleteButton: { borderColor: "#F1C5BF", borderWidth: 1 },
-  text: { color: "#FEFEFE", fontSize: 15 },
+  text: { fontSize: 15 },
   deleteText: { color: "#D94C3D" },
   pressed: { opacity: 0.7 },
 });

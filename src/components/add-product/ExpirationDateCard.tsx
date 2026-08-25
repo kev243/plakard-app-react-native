@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
+import { useTheme } from "@/context/ThemeContext";
 
 const weekDays = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"];
 
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function ExpirationDateCard({ value, onChange }: Props) {
+  const { colors } = useTheme();
   const [displayedMonth, setDisplayedMonth] = useState(
     () => new Date(value.getFullYear(), value.getMonth(), 1),
   );
@@ -70,7 +72,7 @@ export function ExpirationDateCard({ value, onChange }: Props) {
             disabled={isCurrentMonth}
             onPress={() => changeMonth(-1)}
           />
-          <AppText weight="bold" style={styles.monthLabel}>
+          <AppText weight="bold" style={[styles.monthLabel, { color: colors.primary }]}>
             {monthLabel}
           </AppText>
           <MonthButton direction="forward" onPress={() => changeMonth(1)} />
@@ -80,7 +82,7 @@ export function ExpirationDateCard({ value, onChange }: Props) {
       <View style={styles.grid}>
         {weekDays.map((day) => (
           <View key={day} style={styles.cell}>
-            <AppText weight="bold" style={styles.weekDay}>
+            <AppText weight="bold" style={[styles.weekDay, { color: colors.textMuted }]}>
               {day}
             </AppText>
           </View>
@@ -110,15 +112,16 @@ export function ExpirationDateCard({ value, onChange }: Props) {
                   style={[
                     styles.dayButton,
                     unavailable && styles.unavailableDay,
-                    selected && styles.selectedDay,
+                    selected && [styles.selectedDay, { backgroundColor: colors.selected }],
                   ]}
                 >
                   <AppText
                     weight={selected ? "bold" : "regular"}
                     style={[
                       styles.dayText,
-                      unavailable && styles.unavailableDayText,
-                      selected && styles.selectedDayText,
+                      { color: colors.text },
+                      unavailable && [styles.unavailableDayText, { color: colors.textMuted }],
+                      selected && [styles.selectedDayText, { color: colors.selectedText }],
                     ]}
                   >
                     {day}
@@ -148,6 +151,7 @@ type MonthButtonProps = {
 };
 
 function MonthButton({ direction, disabled = false, onPress }: MonthButtonProps) {
+  const { colors } = useTheme();
   return (
     <Pressable
       accessibilityLabel={direction === "back" ? "Mois précédent" : "Mois suivant"}
@@ -160,7 +164,7 @@ function MonthButton({ direction, disabled = false, onPress }: MonthButtonProps)
       <Ionicons
         name={`chevron-${direction}`}
         size={18}
-        color={disabled ? "#C9CBCC" : "#00975D"}
+        color={disabled ? colors.textMuted : colors.primary}
       />
     </Pressable>
   );
@@ -179,7 +183,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 26,
   },
-  monthLabel: { color: "#00975D", fontSize: 15, textTransform: "capitalize" },
+  monthLabel: { fontSize: 15, textTransform: "capitalize" },
   grid: { flexDirection: "row", flexWrap: "wrap", marginTop: 18 },
   cell: {
     alignItems: "center",
@@ -187,7 +191,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "14.2857%",
   },
-  weekDay: { color: "#B1B3B4", fontSize: 12 },
+  weekDay: { fontSize: 12 },
   dayButton: {
     alignItems: "center",
     borderRadius: 14,
@@ -195,9 +199,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 36,
   },
-  dayText: { color: "#11181E", fontSize: 15 },
+  dayText: { fontSize: 15 },
   unavailableDay: { opacity: 0.45 },
-  unavailableDayText: { color: "#BFC1C2" },
-  selectedDay: { backgroundColor: "#11181E" },
-  selectedDayText: { color: "#FEFEFE", fontSize: 15 },
+  unavailableDayText: {},
+  selectedDay: {},
+  selectedDayText: { fontSize: 15 },
 });

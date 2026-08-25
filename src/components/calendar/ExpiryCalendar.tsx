@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 const weekDays = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"];
 
@@ -22,6 +23,7 @@ export function ExpiryCalendar({
   onChangeMonth,
   onSelectDate,
 }: Props) {
+  const { colors } = useTheme();
   const productDates = useMemo(() => {
     const dates = new Map<string, FoodItem[]>();
     products.forEach((product) => {
@@ -50,7 +52,7 @@ export function ExpiryCalendar({
   const selectedKey = getDateKey(selectedDate);
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
       <View style={styles.header}>
         <Pressable
           accessibilityLabel="Mois précédent"
@@ -58,7 +60,7 @@ export function ExpiryCalendar({
           onPress={() => onChangeMonth(-1)}
           style={styles.monthButton}
         >
-          <Ionicons name="chevron-back" size={22} color="#11181E" />
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </Pressable>
         <AppText weight="extraBold" style={styles.monthLabel}>
           {monthLabel}
@@ -69,14 +71,14 @@ export function ExpiryCalendar({
           onPress={() => onChangeMonth(1)}
           style={styles.monthButton}
         >
-          <Ionicons name="chevron-forward" size={22} color="#11181E" />
+          <Ionicons name="chevron-forward" size={22} color={colors.text} />
         </Pressable>
       </View>
 
       <View style={styles.grid}>
         {weekDays.map((day) => (
           <View key={day} style={styles.cell}>
-            <AppText weight="bold" style={styles.weekDay}>
+            <AppText weight="bold" style={[styles.weekDay, { color: colors.textMuted }]}>
               {day}
             </AppText>
           </View>
@@ -105,13 +107,17 @@ export function ExpiryCalendar({
                 onPress={() => onSelectDate(date)}
                 style={[
                   styles.dayButton,
-                  today && styles.today,
-                  selected && styles.selectedDay,
+                  today && [styles.today, { backgroundColor: colors.surfaceSelected }],
+                  selected && [styles.selectedDay, { backgroundColor: colors.selected }],
                 ]}
               >
                 <AppText
                   weight={selected ? "bold" : "regular"}
-                  style={[styles.dayText, selected && styles.selectedDayText]}
+                  style={[
+                    styles.dayText,
+                    { color: colors.text },
+                    selected && [styles.selectedDayText, { color: colors.selectedText }],
+                  ]}
                 >
                   {day}
                 </AppText>
@@ -136,7 +142,6 @@ export function ExpiryCalendar({
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FEFEFE",
     borderRadius: 28,
     elevation: 2,
     padding: 18,
@@ -157,7 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 42,
   },
-  monthLabel: { color: "#11181E", fontSize: 19, textTransform: "capitalize" },
+  monthLabel: { fontSize: 19, textTransform: "capitalize" },
   grid: { flexDirection: "row", flexWrap: "wrap", marginTop: 12 },
   cell: {
     alignItems: "center",
@@ -165,7 +170,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "14.2857%",
   },
-  weekDay: { color: "#A4A7A8", fontSize: 12 },
+  weekDay: { fontSize: 12 },
   dayButton: {
     alignItems: "center",
     borderRadius: 16,
@@ -173,10 +178,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 40,
   },
-  today: { backgroundColor: "#EFF8F3" },
-  selectedDay: { backgroundColor: "#11181E" },
-  dayText: { color: "#11181E", fontSize: 15 },
-  selectedDayText: { color: "#FEFEFE" },
+  today: {},
+  selectedDay: {},
+  dayText: { fontSize: 15 },
+  selectedDayText: {},
   marker: {
     backgroundColor: "#00975D",
     borderRadius: 3,

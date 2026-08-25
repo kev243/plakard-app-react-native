@@ -12,10 +12,12 @@ import { getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import { Pressable, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
   const { products, isLoading } = useProducts();
+  const { colors } = useTheme();
   const [activeFilter, setActiveFilter] = useState<FilterTab>("Tous");
   const isEmpty = !isLoading && products.length === 0;
   const filteredProducts = useMemo(
@@ -49,7 +51,7 @@ export default function HomeScreen() {
           accessibilityLabel="Ajouter un produit"
           accessibilityRole="button"
           onPress={() => router.push("../add-product")}
-          style={styles.floatingButton}
+          style={[styles.floatingButton, { backgroundColor: colors.primary }]}
         >
           <Ionicons name="add" size={30} color="#FEFEFE" />
         </Pressable>
@@ -79,7 +81,6 @@ const styles = StyleSheet.create({
   },
   floatingButton: {
     alignItems: "center",
-    backgroundColor: "#00975D",
     borderRadius: 30,
     bottom: 24,
     elevation: 5,

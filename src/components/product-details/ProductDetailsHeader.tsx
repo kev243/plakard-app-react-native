@@ -1,8 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export function ProductDetailsHeader({ onBack }: { onBack: () => void }) {
+  const { colors } = useTheme();
   return (
     <View style={styles.header}>
       <Pressable
@@ -12,9 +14,9 @@ export function ProductDetailsHeader({ onBack }: { onBack: () => void }) {
         onPress={onBack}
         style={styles.backButton}
       >
-        <Ionicons name="chevron-back" size={25} color="#11181E" />
+        <Ionicons name="chevron-back" size={25} color={colors.text} />
       </Pressable>
-      <AppText weight="extraBold" style={styles.title}>
+      <AppText weight="extraBold" style={[styles.title, { color: colors.text }]}>
         Détails du produit
       </AppText>
       <View style={styles.spacer} />
@@ -37,7 +39,6 @@ const styles = StyleSheet.create({
     width: 56,
   },
   title: {
-    color: "#11181E",
     flex: 1,
     fontSize: 21,
     textAlign: "center",

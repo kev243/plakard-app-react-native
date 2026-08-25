@@ -2,8 +2,10 @@ import { useProducts } from "@/context/ProductsContext";
 import { getDaysUntil } from "@/utils/expiration";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function CardStats() {
+  const { colors } = useTheme();
   const { products } = useProducts();
   const expiredCount = products.filter(
     (product) => getDaysUntil(product.expirationDate) < 0,
@@ -11,16 +13,16 @@ export default function CardStats() {
   const freshCount = products.length - expiredCount;
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
       <View style={styles.statsRow}>
         <View style={styles.stat}>
-          <AppText weight="extraBold" style={styles.value}>
+          <AppText weight="extraBold" style={[styles.value, { color: colors.text }]}>
             {products.length}
           </AppText>
           <AppText style={styles.label}>Total items</AppText>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.stat}>
           <AppText
@@ -32,7 +34,7 @@ export default function CardStats() {
           <AppText style={styles.label}>Produits expirés</AppText>
         </View>
 
-        <View style={styles.divider} />
+        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
         <View style={styles.stat}>
           <AppText weight="extraBold" style={[styles.value, styles.freshValue]}>
@@ -47,7 +49,6 @@ export default function CardStats() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FEFEFE",
     borderRadius: 16,
     padding: 16,
     marginTop: 16,
@@ -73,7 +74,6 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 26,
-    color: "#202020",
     lineHeight: 32,
   },
   expiredValue: {
@@ -90,6 +90,5 @@ const styles = StyleSheet.create({
   divider: {
     width: 1,
     height: 44,
-    backgroundColor: "#e8e8e8",
   },
 });

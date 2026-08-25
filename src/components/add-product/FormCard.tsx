@@ -1,16 +1,19 @@
 import { PropsWithChildren } from "react";
+import { useTheme } from "@/context/ThemeContext";
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { AppText } from "../shared/AppText";
 
 type FormCardProps = PropsWithChildren<{ style?: StyleProp<ViewStyle> }>;
 
 export function FormCard({ children, style }: FormCardProps) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  const { colors } = useTheme();
+  return <View style={[styles.card, { backgroundColor: colors.card }, style]}>{children}</View>;
 }
 
 export function SectionTitle({ children }: PropsWithChildren) {
+  const { colors } = useTheme();
   return (
-    <AppText weight="bold" style={styles.title}>
+    <AppText weight="bold" style={[styles.title, { color: colors.textMuted }]}>
       {children}
     </AppText>
   );
@@ -18,7 +21,6 @@ export function SectionTitle({ children }: PropsWithChildren) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#FEFEFE",
     borderRadius: 28,
     elevation: 2,
     padding: 22,
@@ -28,7 +30,6 @@ const styles = StyleSheet.create({
     shadowRadius: 14,
   },
   title: {
-    color: "#9A9EA1",
     fontSize: 13,
     letterSpacing: 0.6,
   },

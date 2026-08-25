@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
 import { categories, Category } from "./options";
+import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   category: Category;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function CategoryCard({ category, onChange }: Props) {
+  const { colors } = useTheme();
   return (
     <FormCard>
       <SectionTitle>CATÉGORIE</SectionTitle>
@@ -19,14 +21,21 @@ export function CategoryCard({ category, onChange }: Props) {
             <Pressable
               key={option.name}
               onPress={() => onChange(option.name)}
-              style={[styles.option, selected && styles.selected]}
+              style={[
+                styles.option,
+                { backgroundColor: colors.surface },
+                selected && [styles.selected, { backgroundColor: colors.surfaceSelected }],
+              ]}
             >
               <AppText style={styles.icon}>{option.icon}</AppText>
               <AppText
                 weight="bold"
                 numberOfLines={1}
                 adjustsFontSizeToFit
-                style={selected ? styles.selectedText : styles.text}
+                style={[
+                  selected ? styles.selectedText : styles.text,
+                  { color: selected ? colors.primary : colors.textSecondary },
+                ]}
               >
                 {option.label}
               </AppText>
@@ -48,7 +57,6 @@ const styles = StyleSheet.create({
   },
   option: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 18,
     height: 96,
     justifyContent: "center",
@@ -60,6 +68,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   icon: { fontSize: 29, marginBottom: 9 },
-  text: { color: "#929595", fontSize: 12, paddingHorizontal: 4 },
-  selectedText: { color: "#00975D", fontSize: 12, paddingHorizontal: 4 },
+  text: { fontSize: 12, paddingHorizontal: 4 },
+  selectedText: { fontSize: 12, paddingHorizontal: 4 },
 });

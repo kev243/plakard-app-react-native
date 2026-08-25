@@ -1,5 +1,6 @@
 import React from "react";
-import { StyleSheet, Text, TextProps } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
+import { Text, TextProps } from "react-native";
 
 type AppTextProps = TextProps & {
   weight?: "regular" | "semiBold" | "bold" | "extraBold";
@@ -13,16 +14,11 @@ const fontFamilies = {
 } as const;
 
 export function AppText({ weight = "regular", style, ...props }: AppTextProps) {
+  const { colors } = useTheme();
   return (
     <Text
       {...props}
-      style={[styles.text, { fontFamily: fontFamilies[weight] }, style]}
+      style={[{ color: colors.text, fontFamily: fontFamilies[weight] }, style]}
     />
   );
 }
-
-const styles = StyleSheet.create({
-  text: {
-    color: "#202020",
-  },
-});

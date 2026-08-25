@@ -3,8 +3,10 @@ import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function CardProduct({ products }: { products: FoodItem[] }) {
+  const { colors } = useTheme();
   return (
     <FlatList
       data={products}
@@ -30,10 +32,11 @@ export default function CardProduct({ products }: { products: FoodItem[] }) {
             }
             style={({ pressed }) => [
               styles.card,
+              { backgroundColor: colors.card },
               pressed && styles.pressedCard,
             ]}
           >
-            <View style={styles.emojiContainer}>
+            <View style={[styles.emojiContainer, { backgroundColor: colors.surface }]}>
               <AppText style={styles.emoji}>{item.emoji}</AppText>
             </View>
 
@@ -41,7 +44,7 @@ export default function CardProduct({ products }: { products: FoodItem[] }) {
               <AppText weight="bold" style={styles.name}>
                 {item.name}
               </AppText>
-              <AppText style={styles.meta}>
+              <AppText style={[styles.meta, { color: colors.textSecondary }]}>
                 {item.quantity} {item.quantity > 1 ? "unités" : "unité"} •{" "}
                 {storageLabels[item.storage]}
               </AppText>
@@ -87,7 +90,6 @@ const styles = StyleSheet.create({
   card: {
     alignItems: "center",
     flexDirection: "row",
-    backgroundColor: "#FEFEFE",
     borderRadius: 16,
     padding: 16,
     marginBottom: 10,
@@ -103,7 +105,6 @@ const styles = StyleSheet.create({
   },
   emojiContainer: {
     alignItems: "center",
-    backgroundColor: "#fbf9ee",
     borderRadius: 12,
     height: 52,
     justifyContent: "center",
@@ -120,7 +121,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   meta: {
-    color: "#777777",
     fontSize: 12,
     marginTop: 4,
   },

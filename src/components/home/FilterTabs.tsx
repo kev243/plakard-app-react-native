@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export type FilterTab =
   | "Tous"
@@ -24,6 +25,7 @@ type Props = {
 };
 
 export default function FilterTabs({ activeTab, onChange }: Props) {
+  const { colors } = useTheme();
 
   return (
     <ScrollView
@@ -45,13 +47,18 @@ export default function FilterTabs({ activeTab, onChange }: Props) {
             onPress={() => onChange(tab)}
             style={({ pressed }) => [
               styles.button,
-              isActive ? styles.activeButton : styles.inactiveButton,
+              isActive
+                ? [styles.activeButton, { backgroundColor: colors.selected }]
+                : [styles.inactiveButton, { backgroundColor: colors.surface }],
               pressed && styles.pressedButton,
             ]}
           >
             <AppText
               weight="semiBold"
-              style={isActive ? styles.activeText : styles.inactiveText}
+              style={[
+                isActive ? styles.activeText : styles.inactiveText,
+                { color: isActive ? colors.selectedText : colors.textSecondary },
+              ]}
             >
               {tab}
             </AppText>
@@ -79,17 +86,13 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   activeButton: {
-    backgroundColor: "#11181E",
   },
   inactiveButton: {
-    backgroundColor: "rgba(17,24,30,0.07)",
   },
   activeText: {
-    color: "#FEFEFE",
     fontSize: 13,
   },
   inactiveText: {
-    color: "rgba(17,24,30,0.6)",
     fontSize: 13,
   },
   pressedButton: {

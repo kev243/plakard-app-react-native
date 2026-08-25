@@ -4,20 +4,22 @@ import { formatRemainingTime, getDaysUntil, getExpirationStatus, parseDateKey } 
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export function ProductHeroCard({ product }: { product: FoodItem }) {
+  const { colors } = useTheme();
   const status = getExpirationStatus(getDaysUntil(product.expirationDate));
   const warning = status === "warning";
   const critical = status === "critical" || status === "expired";
   return (
     <FormCard style={styles.heroCard}>
-      <View style={styles.emojiContainer}>
+      <View style={[styles.emojiContainer, { backgroundColor: colors.surface }]}>
         <AppText style={styles.emoji}>{product.emoji}</AppText>
       </View>
       <AppText weight="extraBold" style={styles.productName}>
         {product.name}
       </AppText>
-      <AppText style={styles.productCategory}>
+      <AppText style={[styles.productCategory, { color: colors.textSecondary }]}>
         {getCategoryLabel(product)}
       </AppText>
       <View style={[
@@ -76,6 +78,7 @@ export function ProductInformationCard({ product }: { product: FoodItem }) {
 }
 
 export function ProductExpirationCard({ product }: { product: FoodItem }) {
+  const { colors } = useTheme();
   const daysLeft = getDaysUntil(product.expirationDate);
   const status = getExpirationStatus(daysLeft);
   const warning = status === "warning";
@@ -87,7 +90,7 @@ export function ProductExpirationCard({ product }: { product: FoodItem }) {
     <FormCard>
       <View style={styles.cardHeader}>
         <SectionTitle>DATE D’EXPIRATION</SectionTitle>
-        <Ionicons name="calendar-outline" size={20} color="#00975D" />
+        <Ionicons name="calendar-outline" size={20} color={colors.primary} />
       </View>
       <View style={styles.expirationContent}>
         <View>
@@ -98,7 +101,7 @@ export function ProductExpirationCard({ product }: { product: FoodItem }) {
               year: "numeric",
             })}
           </AppText>
-          <AppText style={styles.expirationHint}>Date prévue</AppText>
+          <AppText style={[styles.expirationHint, { color: colors.textMuted }]}>Date prévue</AppText>
         </View>
         <View style={[
           styles.daysBox,
@@ -129,10 +132,11 @@ export function ProductExpirationCard({ product }: { product: FoodItem }) {
 }
 
 export function ProductReminderCard({ product }: { product: FoodItem }) {
+  const { colors } = useTheme();
   return (
     <FormCard>
       <View style={styles.reminderRow}>
-        <View style={styles.reminderIcon}>
+        <View style={[styles.reminderIcon, { backgroundColor: colors.surface }]}>
           <AppText style={styles.bell}>🔔</AppText>
         </View>
         <View style={styles.reminderDetails}>
@@ -141,7 +145,7 @@ export function ProductReminderCard({ product }: { product: FoodItem }) {
             {product.alertPreference}
           </AppText>
         </View>
-        <Ionicons name="checkmark-circle" size={27} color="#00975D" />
+        <Ionicons name="checkmark-circle" size={27} color={colors.primary} />
       </View>
     </FormCard>
   );
@@ -155,12 +159,13 @@ type InfoRowProps = {
 };
 
 function InfoRow({ icon, label, value, last = false }: InfoRowProps) {
+  const { colors } = useTheme();
   return (
-    <View style={[styles.infoRow, last && styles.lastInfoRow]}>
-      <View style={styles.infoIcon}>
-        <Ionicons name={icon} size={20} color="#00975D" />
+    <View style={[styles.infoRow, { borderBottomColor: colors.border }, last && styles.lastInfoRow]}>
+      <View style={[styles.infoIcon, { backgroundColor: colors.surfaceSelected }]}>
+        <Ionicons name={icon} size={20} color={colors.primary} />
       </View>
-      <AppText style={styles.infoLabel}>{label}</AppText>
+      <AppText style={[styles.infoLabel, { color: colors.textSecondary }]}>{label}</AppText>
       <AppText weight="bold" style={styles.infoValue}>
         {value}
       </AppText>
@@ -176,15 +181,14 @@ const styles = StyleSheet.create({
   heroCard: { alignItems: "center", paddingVertical: 28 },
   emojiContainer: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 28,
     height: 92,
     justifyContent: "center",
     width: 92,
   },
   emoji: { fontSize: 50 },
-  productName: { color: "#11181E", fontSize: 24, marginTop: 16 },
-  productCategory: { color: "#85898B", fontSize: 14, marginTop: 4 },
+  productName: { fontSize: 24, marginTop: 16 },
+  productCategory: { fontSize: 14, marginTop: 4 },
   statusPill: {
     alignItems: "center",
     backgroundColor: "#E7F5ED",
@@ -211,7 +215,6 @@ const styles = StyleSheet.create({
   infoList: { marginTop: 13 },
   infoRow: {
     alignItems: "center",
-    borderBottomColor: "#ECEDEB",
     borderBottomWidth: 1,
     flexDirection: "row",
     minHeight: 62,
@@ -219,15 +222,13 @@ const styles = StyleSheet.create({
   lastInfoRow: { borderBottomWidth: 0 },
   infoIcon: {
     alignItems: "center",
-    backgroundColor: "#EFF8F3",
     borderRadius: 11,
     height: 38,
     justifyContent: "center",
     width: 38,
   },
-  infoLabel: { color: "#7F8385", flex: 1, fontSize: 14, marginLeft: 12 },
+  infoLabel: { flex: 1, fontSize: 14, marginLeft: 12 },
   infoValue: {
-    color: "#11181E",
     fontSize: 14,
     maxWidth: "46%",
     textAlign: "right",
@@ -244,11 +245,10 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   expirationDate: {
-    color: "#11181E",
     fontSize: 17,
     textTransform: "capitalize",
   },
-  expirationHint: { color: "#999C9E", fontSize: 12, marginTop: 4 },
+  expirationHint: { fontSize: 12, marginTop: 4 },
   daysBox: {
     alignItems: "center",
     backgroundColor: "#E7F5ED",
@@ -268,7 +268,6 @@ const styles = StyleSheet.create({
   },
   reminderIcon: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 13,
     height: 46,
     justifyContent: "center",
@@ -276,5 +275,5 @@ const styles = StyleSheet.create({
   },
   bell: { fontSize: 22 },
   reminderDetails: { flex: 1, marginLeft: 13 },
-  reminderValue: { color: "#11181E", fontSize: 16, marginTop: 5 },
+  reminderValue: { fontSize: 16, marginTop: 5 },
 });

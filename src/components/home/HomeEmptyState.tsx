@@ -1,17 +1,19 @@
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
+import { useTheme } from "@/context/ThemeContext";
 
 export function HomeEmptyState() {
+  const { colors } = useTheme();
   return (
-    <View style={styles.container}>
-      <View style={styles.iconContainer}>
+    <View style={[styles.container, { backgroundColor: colors.card }]}>
+      <View style={[styles.iconContainer, { backgroundColor: colors.surface }]}>
         <AppText style={styles.icon}>☹️</AppText>
       </View>
       <AppText weight="extraBold" style={styles.title}>
         Ton Plakard est vide
       </AppText>
-      <AppText style={styles.description}>
+      <AppText style={[styles.description, { color: colors.textSecondary }]}>
         Ajoute ton premier produit pour suivre sa date d’expiration et éviter le
         gaspillage.
       </AppText>
@@ -20,6 +22,7 @@ export function HomeEmptyState() {
         onPress={() => router.push("/add-product")}
         style={({ pressed }) => [
           styles.button,
+          { backgroundColor: colors.primary },
           pressed && styles.pressedButton,
         ]}
       >
@@ -34,7 +37,6 @@ export function HomeEmptyState() {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    backgroundColor: "#FEFEFE",
     borderRadius: 24,
     marginTop: 18,
     paddingHorizontal: 28,
@@ -47,23 +49,20 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 30,
     height: 88,
     justifyContent: "center",
     width: 88,
   },
   icon: { fontSize: 45 },
-  title: { color: "#11181E", fontSize: 20, marginTop: 18 },
+  title: { fontSize: 20, marginTop: 18 },
   description: {
-    color: "#7F8385",
     fontSize: 14,
     lineHeight: 20,
     marginTop: 8,
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#00975D",
     borderRadius: 16,
     marginTop: 22,
     paddingHorizontal: 24,

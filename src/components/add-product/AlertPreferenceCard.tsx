@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
 import { alertOptions, AlertPreference } from "./options";
+import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   value: AlertPreference;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function AlertPreferenceCard({ value, availableOptions, onChange }: Props) {
+  const { colors } = useTheme();
   return (
     <FormCard>
       <View style={styles.titleRow}>
@@ -28,10 +30,14 @@ export function AlertPreferenceCard({ value, availableOptions, onChange }: Props
               accessibilityState={{ checked: selected, disabled }}
               disabled={disabled}
               onPress={() => onChange(option)}
-              style={[styles.row, index > 0 && styles.divider]}
+              style={[
+                styles.row,
+                index > 0 && [styles.divider, { borderTopColor: colors.border }],
+              ]}
             >
               <AppText style={[
                 selected ? styles.selectedText : styles.text,
+                { color: selected ? colors.text : colors.textSecondary },
                 disabled && styles.disabledText,
               ]}>
                 {option}
@@ -39,7 +45,7 @@ export function AlertPreferenceCard({ value, availableOptions, onChange }: Props
               <View style={[
                 styles.radio,
                 selected && !disabled && styles.radioSelected,
-                disabled && styles.disabledRadio,
+                disabled && [styles.disabledRadio, { backgroundColor: colors.surface, borderColor: colors.border }],
               ]}>
                 {selected && !disabled && (
                   <Ionicons name="checkmark" size={20} color="#FEFEFE" />
@@ -64,9 +70,9 @@ const styles = StyleSheet.create({
     minHeight: 62,
     paddingHorizontal: 4,
   },
-  divider: { borderTopColor: "#ECEDEB", borderTopWidth: 1 },
-  text: { color: "#7F8385", fontSize: 17 },
-  selectedText: { color: "#11181E", fontSize: 17 },
+  divider: { borderTopWidth: 1 },
+  text: { fontSize: 17 },
+  selectedText: { fontSize: 17 },
   disabledText: { color: "#C9CBCC" },
   radio: {
     alignItems: "center",

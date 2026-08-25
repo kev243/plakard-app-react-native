@@ -22,6 +22,7 @@ import { getDateKey, getDaysUntil, parseDateKey } from "@/utils/expiration";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
+import { useTheme } from "@/context/ThemeContext";
 
 const formStorageToFoodStorage = {
   Réfrigérateur: "Fridge",
@@ -66,6 +67,7 @@ function getFormCategory(category?: string): Category {
 }
 
 export function AddProductContent() {
+  const { colors } = useTheme();
   const { id } = useLocalSearchParams<{ id?: string }>();
   const { products, addProduct, updateProduct } = useProducts();
   const product = products.find((item) => item.id === Number(id));
@@ -199,7 +201,7 @@ export function AddProductContent() {
             weight="extraBold"
             numberOfLines={1}
             adjustsFontSizeToFit
-            style={styles.title}
+            style={[styles.title, { color: colors.text }]}
           >
             {isEditing ? "Modifier le produit" : "Ajouter un produit"}
           </AppText>
@@ -272,7 +274,6 @@ const styles = StyleSheet.create({
   },
   cancelText: { color: "#95999A", fontSize: 16 },
   title: {
-    color: "#11181E",
     flex: 1,
     fontSize: 21,
     textAlign: "center",

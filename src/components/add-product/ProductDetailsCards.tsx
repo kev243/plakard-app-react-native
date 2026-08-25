@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
 import { categories, StorageLocation, storageOptions } from "./options";
+import { useTheme } from "@/context/ThemeContext";
 
 type ProductNameCardProps = {
   category: string;
@@ -15,6 +16,7 @@ export function ProductNameCard({
   name,
   onChangeName,
 }: ProductNameCardProps) {
+  const { colors } = useTheme();
   const icon = categories.find((item) => item.name === category)?.icon ?? "❓";
 
   return (
@@ -26,9 +28,9 @@ export function ProductNameCard({
           value={name}
           onChangeText={onChangeName}
           placeholder="Nom du produit"
-          placeholderTextColor="#9A9EA1"
+          placeholderTextColor={colors.textMuted}
           returnKeyType="done"
-          style={styles.nameInput}
+          style={[styles.nameInput, { color: colors.text }]}
         />
       </View>
     </FormCard>
@@ -44,20 +46,21 @@ export function QuantityCard({
   quantity,
   onChangeQuantity,
 }: QuantityCardProps) {
+  const { colors } = useTheme();
   return (
     <FormCard style={styles.quantityCard}>
       <SectionTitle>QUANTITÉ</SectionTitle>
       <View style={styles.quantityRow}>
-        <AppText style={styles.quantityPrompt}>Combien d’unités?</AppText>
-        <View style={styles.stepper}>
+        <AppText style={[styles.quantityPrompt, { color: colors.textSecondary }]}>Combien d’unités?</AppText>
+        <View style={[styles.stepper, { backgroundColor: colors.surface }]}>
           <Pressable
             accessibilityLabel="Diminuer la quantité"
             hitSlop={8}
             onPress={() => onChangeQuantity(Math.max(1, quantity - 1))}
           >
-            <Ionicons name="remove" size={22} color="#11181E" />
+            <Ionicons name="remove" size={22} color={colors.text} />
           </Pressable>
-          <AppText weight="extraBold" style={styles.quantityValue}>
+          <AppText weight="extraBold" style={[styles.quantityValue, { color: colors.text }]}>
             {quantity}
           </AppText>
           <Pressable
@@ -79,24 +82,31 @@ type StorageCardProps = {
 };
 
 export function StorageCard({ storage, onChangeStorage }: StorageCardProps) {
+  const { colors } = useTheme();
   return (
     <FormCard>
       <SectionTitle>LIEU DE STOCKAGE</SectionTitle>
-      <View style={styles.storageRow}>
+      <View style={[styles.storageRow, { backgroundColor: colors.surface }]}>
         {storageOptions.map((option) => {
           const selected = storage === option.name;
           return (
             <Pressable
               key={option.name}
               onPress={() => onChangeStorage(option.name)}
-              style={[styles.storageOption, selected && styles.storageSelected]}
+              style={[
+                styles.storageOption,
+                selected && [styles.storageSelected, { backgroundColor: colors.selected }],
+              ]}
             >
               <AppText style={styles.storageIcon}>{option.icon}</AppText>
               <AppText
                 weight="bold"
                 numberOfLines={1}
                 style={
-                  selected ? styles.storageSelectedText : styles.storageText
+                  [
+                    selected ? styles.storageSelectedText : styles.storageText,
+                    { color: selected ? colors.selectedText : colors.textSecondary },
+                  ]
                 }
               >
                 {option.label}
@@ -121,7 +131,6 @@ const styles = StyleSheet.create({
   },
   productIcon: { fontSize: 27 },
   nameInput: {
-    color: "#11181E",
     flex: 1,
     fontFamily: "Nunito-Bold",
     fontSize: 21,
@@ -134,23 +143,20 @@ const styles = StyleSheet.create({
     marginTop: 18,
   },
   quantityPrompt: {
-    color: "#787D80",
     fontSize: 17,
     lineHeight: 23,
     maxWidth: 110,
   },
   stepper: {
     alignItems: "center",
-    backgroundColor: "#FBF9EE",
     borderRadius: 22,
     flexDirection: "row",
     height: 52,
     justifyContent: "space-around",
     width: 146,
   },
-  quantityValue: { color: "#11181E", fontSize: 21 },
+  quantityValue: { fontSize: 21 },
   storageRow: {
-    backgroundColor: "#FBF9EE",
     borderRadius: 19,
     flexDirection: "row",
     marginTop: 16,
@@ -166,8 +172,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 10,
   },
-  storageSelected: { backgroundColor: "#11181E" },
+  storageSelected: {},
   storageIcon: { fontSize: 13 },
-  storageText: { color: "#929595", fontSize: 13 },
-  storageSelectedText: { color: "#FEFEFE", fontSize: 13 },
+  storageText: { fontSize: 13 },
+  storageSelectedText: { fontSize: 13 },
 });
