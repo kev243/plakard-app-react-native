@@ -1,5 +1,5 @@
 import { FoodItem } from "@/data/products";
-import { getDateKey, getExpirationDate } from "@/utils/expiration";
+import { getDateKey, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -25,7 +25,7 @@ export function ExpiryCalendar({
   const productDates = useMemo(() => {
     const dates = new Map<string, FoodItem[]>();
     products.forEach((product) => {
-      const key = getDateKey(getExpirationDate(product.daysLeft));
+      const key = product.expirationDate;
       dates.set(key, [...(dates.get(key) ?? []), product]);
     });
     return dates;
@@ -90,7 +90,13 @@ export function ExpiryCalendar({
           const dayProducts = productDates.get(key) ?? [];
           const selected = key === selectedKey;
           const today = key === todayKey;
-          const urgent = dayProducts.some((product) => product.daysLeft <= 3);
+          const statuses = dayProducts.map((product) =>
+            getExpirationStatus(getDaysUntil(product.expirationDate)),
+          );
+          const critical = statuses.some(
+            (status) => status === "critical" || status === "expired",
+          );
+          const warning = statuses.includes("warning");
 
           return (
             <View key={key} style={styles.cell}>
@@ -113,7 +119,8 @@ export function ExpiryCalendar({
                   <View
                     style={[
                       styles.marker,
-                      urgent && styles.urgentMarker,
+                      warning && styles.warningMarker,
+                      critical && styles.criticalMarker,
                       selected && styles.selectedMarker,
                     ]}
                   />
@@ -178,6 +185,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 5,
   },
-  urgentMarker: { backgroundColor: "#D94C3D" },
+  warningMarker: { backgroundColor: "#C58A00" },
+  criticalMarker: { backgroundColor: "#D94C3D" },
   selectedMarker: { backgroundColor: "#FEFEFE" },
 });

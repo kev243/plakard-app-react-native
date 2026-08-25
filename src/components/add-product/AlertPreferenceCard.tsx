@@ -6,10 +6,11 @@ import { alertOptions, AlertPreference } from "./options";
 
 type Props = {
   value: AlertPreference;
+  availableOptions: AlertPreference[];
   onChange: (preference: AlertPreference) => void;
 };
 
-export function AlertPreferenceCard({ value, onChange }: Props) {
+export function AlertPreferenceCard({ value, availableOptions, onChange }: Props) {
   return (
     <FormCard>
       <View style={styles.titleRow}>
@@ -19,19 +20,28 @@ export function AlertPreferenceCard({ value, onChange }: Props) {
       <View style={styles.list}>
         {alertOptions.map((option, index) => {
           const selected = value === option;
+          const disabled = !availableOptions.includes(option);
           return (
             <Pressable
               key={option}
               accessibilityRole="radio"
-              accessibilityState={{ checked: selected }}
+              accessibilityState={{ checked: selected, disabled }}
+              disabled={disabled}
               onPress={() => onChange(option)}
               style={[styles.row, index > 0 && styles.divider]}
             >
-              <AppText style={selected ? styles.selectedText : styles.text}>
+              <AppText style={[
+                selected ? styles.selectedText : styles.text,
+                disabled && styles.disabledText,
+              ]}>
                 {option}
               </AppText>
-              <View style={[styles.radio, selected && styles.radioSelected]}>
-                {selected && (
+              <View style={[
+                styles.radio,
+                selected && !disabled && styles.radioSelected,
+                disabled && styles.disabledRadio,
+              ]}>
+                {selected && !disabled && (
                   <Ionicons name="checkmark" size={20} color="#FEFEFE" />
                 )}
               </View>
@@ -57,6 +67,7 @@ const styles = StyleSheet.create({
   divider: { borderTopColor: "#ECEDEB", borderTopWidth: 1 },
   text: { color: "#7F8385", fontSize: 17 },
   selectedText: { color: "#11181E", fontSize: 17 },
+  disabledText: { color: "#C9CBCC" },
   radio: {
     alignItems: "center",
     borderColor: "#D0D2D3",
@@ -67,4 +78,5 @@ const styles = StyleSheet.create({
     width: 28,
   },
   radioSelected: { backgroundColor: "#00975D", borderColor: "#00975D" },
+  disabledRadio: { backgroundColor: "#F5F5F3", borderColor: "#E5E6E6" },
 });

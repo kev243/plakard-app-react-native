@@ -3,6 +3,15 @@ export type RemainingTime = {
   value: string;
 };
 
+export type ExpirationStatus = "fresh" | "warning" | "critical" | "expired";
+
+export function getExpirationStatus(daysLeft: number): ExpirationStatus {
+  if (daysLeft < 0) return "expired";
+  if (daysLeft <= 1) return "critical";
+  if (daysLeft < 5) return "warning";
+  return "fresh";
+}
+
 export function formatRemainingTime(daysLeft: number): RemainingTime {
   if (daysLeft < 0) {
     return { value: "Expiré", label: `depuis ${Math.abs(daysLeft)} j` };
@@ -43,4 +52,17 @@ export function getDateKey(date: Date) {
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+export function parseDateKey(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+export function getDaysUntil(date: string | Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const expiration = typeof date === "string" ? parseDateKey(date) : new Date(date);
+  expiration.setHours(0, 0, 0, 0);
+  return Math.round((expiration.getTime() - today.getTime()) / 86_400_000);
 }

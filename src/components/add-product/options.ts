@@ -26,3 +26,10 @@ export const alertOptions = [
 export type StorageLocation = (typeof storageOptions)[number]["name"];
 export type Category = (typeof categories)[number]["name"];
 export type AlertPreference = (typeof alertOptions)[number];
+
+export const alertOptionDays: Record<AlertPreference, number> = {
+  "Le jour même": 0,
+  "2 jours avant": 2,
+  "5 jours avant": 5,
+  "1 semaine avant": 7,
+};

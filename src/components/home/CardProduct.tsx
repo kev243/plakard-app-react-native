@@ -1,13 +1,10 @@
-import { useProducts } from "@/context/ProductsContext";
-import { storageLabels } from "@/data/products";
-import { formatRemainingTime } from "@/utils/expiration";
+import { FoodItem, storageLabels } from "@/data/products";
+import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 
-export default function CardProduct() {
-  const { products } = useProducts();
-
+export default function CardProduct({ products }: { products: FoodItem[] }) {
   return (
     <FlatList
       data={products}
@@ -15,8 +12,11 @@ export default function CardProduct() {
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       renderItem={({ item }) => {
-        const isUrgent = item.daysLeft <= 3;
-        const remainingTime = formatRemainingTime(item.daysLeft);
+        const daysLeft = getDaysUntil(item.expirationDate);
+        const status = getExpirationStatus(daysLeft);
+        const isWarning = status === "warning";
+        const isCritical = status === "critical" || status === "expired";
+        const remainingTime = formatRemainingTime(daysLeft);
 
         return (
           <Pressable
@@ -47,15 +47,27 @@ export default function CardProduct() {
               </AppText>
             </View>
 
-            <View style={[styles.expiry, isUrgent && styles.urgentExpiry]}>
+            <View style={[
+              styles.expiry,
+              isWarning && styles.warningExpiry,
+              isCritical && styles.criticalExpiry,
+            ]}>
               <AppText
                 weight="extraBold"
-                style={[styles.days, isUrgent && styles.urgentDays]}
+                style={[
+                  styles.days,
+                  isWarning && styles.warningText,
+                  isCritical && styles.criticalText,
+                ]}
               >
                 {remainingTime.value}
               </AppText>
               <AppText
-                style={[styles.expiryLabel, isUrgent && styles.urgentDays]}
+                style={[
+                  styles.expiryLabel,
+                  isWarning && styles.warningText,
+                  isCritical && styles.criticalText,
+                ]}
               >
                 {remainingTime.label}
               </AppText>
@@ -120,16 +132,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 6,
   },
-  urgentExpiry: {
-    backgroundColor: "#fde9e6",
-  },
+  warningExpiry: { backgroundColor: "#FFF4D6" },
+  criticalExpiry: { backgroundColor: "#FDE9E6" },
   days: {
     color: "#00975d",
     fontSize: 18,
   },
-  urgentDays: {
-    color: "#d94c3d",
-  },
+  warningText: { color: "#C58A00" },
+  criticalText: { color: "#D94C3D" },
   expiryLabel: {
     color: "#00975d",
     fontSize: 10,

@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
@@ -12,11 +12,19 @@ type Props = {
 };
 
 export function ExpirationDateCard({ value, onChange }: Props) {
+  const [displayedMonth, setDisplayedMonth] = useState(
+    () => new Date(value.getFullYear(), value.getMonth(), 1),
+  );
+
+  useEffect(() => {
+    setDisplayedMonth(new Date(value.getFullYear(), value.getMonth(), 1));
+  }, [value]);
+
   const calendarDays = useMemo(() => {
-    const firstDay = new Date(value.getFullYear(), value.getMonth(), 1).getDay();
+    const firstDay = displayedMonth.getDay();
     const lastDay = new Date(
-      value.getFullYear(),
-      value.getMonth() + 1,
+      displayedMonth.getFullYear(),
+      displayedMonth.getMonth() + 1,
       0,
     ).getDate();
 
@@ -24,41 +32,32 @@ export function ExpirationDateCard({ value, onChange }: Props) {
       ...Array.from({ length: firstDay }, () => null),
       ...Array.from({ length: lastDay }, (_, index) => index + 1),
     ];
-  }, [value]);
+  }, [displayedMonth]);
 
   const monthLabel = new Intl.DateTimeFormat("fr-FR", {
     month: "short",
     year: "numeric",
-  }).format(value);
+  }).format(displayedMonth);
 
   const today = new Date();
   const isCurrentMonth =
-    value.getFullYear() === today.getFullYear() &&
-    value.getMonth() === today.getMonth();
+    displayedMonth.getFullYear() === today.getFullYear() &&
+    displayedMonth.getMonth() === today.getMonth();
 
   const changeMonth = (offset: number) => {
-    const targetMonth = new Date(
-      value.getFullYear(),
-      value.getMonth() + offset,
-      1,
-    );
-    const lastDay = new Date(
-      targetMonth.getFullYear(),
-      targetMonth.getMonth() + 1,
-      0,
-    ).getDate();
-
-    onChange(
+    setDisplayedMonth(
       new Date(
-        targetMonth.getFullYear(),
-        targetMonth.getMonth(),
-        Math.min(value.getDate(), lastDay),
+        displayedMonth.getFullYear(),
+        displayedMonth.getMonth() + offset,
+        1,
       ),
     );
   };
 
   const selectDay = (day: number) => {
-    onChange(new Date(value.getFullYear(), value.getMonth(), day));
+    onChange(
+      new Date(displayedMonth.getFullYear(), displayedMonth.getMonth(), day),
+    );
   };
 
   return (
@@ -87,18 +86,40 @@ export function ExpirationDateCard({ value, onChange }: Props) {
           </View>
         ))}
         {calendarDays.map((day, index) => {
-          const selected = day === value.getDate();
+          const date = day === null
+            ? null
+            : new Date(
+                displayedMonth.getFullYear(),
+                displayedMonth.getMonth(),
+                day,
+              );
+          const unavailable = date ? !isFutureDate(date) : false;
+          const selected =
+            date !== null &&
+            date.getFullYear() === value.getFullYear() &&
+            date.getMonth() === value.getMonth() &&
+            date.getDate() === value.getDate();
           return (
             <View key={`${day ?? "empty"}-${index}`} style={styles.cell}>
               {day !== null && (
                 <Pressable
                   accessibilityLabel={`Choisir le ${day}`}
+                  accessibilityState={{ disabled: unavailable, selected }}
+                  disabled={unavailable}
                   onPress={() => selectDay(day)}
-                  style={[styles.dayButton, selected && styles.selectedDay]}
+                  style={[
+                    styles.dayButton,
+                    unavailable && styles.unavailableDay,
+                    selected && styles.selectedDay,
+                  ]}
                 >
                   <AppText
                     weight={selected ? "bold" : "regular"}
-                    style={selected ? styles.selectedDayText : styles.dayText}
+                    style={[
+                      styles.dayText,
+                      unavailable && styles.unavailableDayText,
+                      selected && styles.selectedDayText,
+                    ]}
                   >
                     {day}
                   </AppText>
@@ -110,6 +131,14 @@ export function ExpirationDateCard({ value, onChange }: Props) {
       </View>
     </FormCard>
   );
+}
+
+function isFutureDate(date: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const candidate = new Date(date);
+  candidate.setHours(0, 0, 0, 0);
+  return candidate.getTime() > today.getTime();
 }
 
 type MonthButtonProps = {
@@ -167,6 +196,8 @@ const styles = StyleSheet.create({
     width: 36,
   },
   dayText: { color: "#11181E", fontSize: 15 },
+  unavailableDay: { opacity: 0.45 },
+  unavailableDayText: { color: "#BFC1C2" },
   selectedDay: { backgroundColor: "#11181E" },
   selectedDayText: { color: "#FEFEFE", fontSize: 15 },
 });

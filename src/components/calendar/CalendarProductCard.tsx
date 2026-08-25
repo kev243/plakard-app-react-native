@@ -1,5 +1,5 @@
 import { FoodItem, storageLabels } from "@/data/products";
-import { formatRemainingTime } from "@/utils/expiration";
+import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
@@ -10,8 +10,9 @@ type Props = {
 };
 
 export function CalendarProductCard({ product, onPress }: Props) {
-  const urgent = product.daysLeft <= 3;
-  const remaining = formatRemainingTime(product.daysLeft);
+  const daysLeft = getDaysUntil(product.expirationDate);
+  const status = getExpirationStatus(daysLeft);
+  const remaining = formatRemainingTime(daysLeft);
 
   return (
     <Pressable
@@ -35,7 +36,11 @@ export function CalendarProductCard({ product, onPress }: Props) {
       <View style={styles.expiryDetails}>
         <AppText
           weight="bold"
-          style={[styles.remaining, urgent && styles.urgentText]}
+          style={[
+            styles.remaining,
+            status === "warning" && styles.warningText,
+            (status === "critical" || status === "expired") && styles.criticalText,
+          ]}
         >
           {remaining.value}
         </AppText>
@@ -74,5 +79,6 @@ const styles = StyleSheet.create({
   meta: { color: "#7F8385", fontSize: 11, marginTop: 4 },
   expiryDetails: { alignItems: "center", flexDirection: "row", gap: 4 },
   remaining: { color: "#00975D", fontSize: 18 },
-  urgentText: { color: "#D94C3D" },
+  warningText: { color: "#C58A00" },
+  criticalText: { color: "#D94C3D" },
 });

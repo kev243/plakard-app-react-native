@@ -3,7 +3,7 @@ import { ExpiryCalendar } from "@/components/calendar/ExpiryCalendar";
 import { AppText } from "@/components/shared/AppText";
 import { Container } from "@/components/shared/Container";
 import { useProducts } from "@/context/ProductsContext";
-import { getDateKey, getExpirationDate } from "@/utils/expiration";
+import { getDateKey } from "@/utils/expiration";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
@@ -18,8 +18,7 @@ export default function CalendarScreen() {
   const selectedProducts = useMemo(() => {
     const selectedKey = getDateKey(selectedDate);
     return products.filter(
-      (product) =>
-        getDateKey(getExpirationDate(product.daysLeft)) === selectedKey,
+      (product) => product.expirationDate === selectedKey,
     );
   }, [products, selectedDate]);
 

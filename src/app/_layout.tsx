@@ -13,6 +13,8 @@ import {
   SafeAreaProvider,
 } from "react-native-safe-area-context";
 import { ProductsProvider } from "@/context/ProductsContext";
+import { migrateDatabase } from "@/database/migrations";
+import { SQLiteProvider } from "expo-sqlite";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -36,16 +38,18 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <ProductsProvider>
-        <Stack initialRouteName="(tabs)">
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="add-product"
-            options={{ presentation: "fullScreenModal", headerShown: false }}
-          />
-          <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
-        </Stack>
-      </ProductsProvider>
+      <SQLiteProvider databaseName="plakard.db" onInit={migrateDatabase}>
+        <ProductsProvider>
+          <Stack initialRouteName="(tabs)">
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="add-product"
+              options={{ presentation: "fullScreenModal", headerShown: false }}
+            />
+            <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+          </Stack>
+        </ProductsProvider>
+      </SQLiteProvider>
     </SafeAreaProvider>
   );
 }

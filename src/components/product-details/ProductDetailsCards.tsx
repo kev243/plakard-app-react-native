@@ -1,12 +1,14 @@
 import { FormCard, SectionTitle } from "@/components/add-product/FormCard";
 import { categoryLabels, FoodItem, storageLabels } from "@/data/products";
-import { formatRemainingTime } from "@/utils/expiration";
+import { formatRemainingTime, getDaysUntil, getExpirationStatus, parseDateKey } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 
 export function ProductHeroCard({ product }: { product: FoodItem }) {
-  const urgent = product.daysLeft <= 3;
+  const status = getExpirationStatus(getDaysUntil(product.expirationDate));
+  const warning = status === "warning";
+  const critical = status === "critical" || status === "expired";
   return (
     <FormCard style={styles.heroCard}>
       <View style={styles.emojiContainer}>
@@ -18,13 +20,29 @@ export function ProductHeroCard({ product }: { product: FoodItem }) {
       <AppText style={styles.productCategory}>
         {getCategoryLabel(product)}
       </AppText>
-      <View style={[styles.statusPill, urgent && styles.urgentBackground]}>
-        <View style={[styles.statusDot, urgent && styles.urgentDot]} />
+      <View style={[
+        styles.statusPill,
+        warning && styles.warningBackground,
+        critical && styles.criticalBackground,
+      ]}>
+        <View style={[
+          styles.statusDot,
+          warning && styles.warningDot,
+          critical && styles.criticalDot,
+        ]} />
         <AppText
           weight="bold"
-          style={[styles.statusText, urgent && styles.urgentText]}
+          style={[
+            styles.statusText,
+            warning && styles.warningText,
+            critical && styles.criticalText,
+          ]}
         >
-          {urgent ? "À consommer bientôt" : "Produit frais"}
+          {status === "expired"
+            ? "Produit expiré"
+            : warning || critical
+              ? "À consommer bientôt"
+              : "Produit frais"}
         </AppText>
       </View>
     </FormCard>
@@ -58,10 +76,12 @@ export function ProductInformationCard({ product }: { product: FoodItem }) {
 }
 
 export function ProductExpirationCard({ product }: { product: FoodItem }) {
-  const urgent = product.daysLeft <= 3;
-  const remainingTime = formatRemainingTime(product.daysLeft);
-  const date = new Date();
-  date.setDate(date.getDate() + product.daysLeft);
+  const daysLeft = getDaysUntil(product.expirationDate);
+  const status = getExpirationStatus(daysLeft);
+  const warning = status === "warning";
+  const critical = status === "critical" || status === "expired";
+  const remainingTime = formatRemainingTime(daysLeft);
+  const date = parseDateKey(product.expirationDate);
 
   return (
     <FormCard>
@@ -80,14 +100,26 @@ export function ProductExpirationCard({ product }: { product: FoodItem }) {
           </AppText>
           <AppText style={styles.expirationHint}>Date prévue</AppText>
         </View>
-        <View style={[styles.daysBox, urgent && styles.urgentBackground]}>
+        <View style={[
+          styles.daysBox,
+          warning && styles.warningBackground,
+          critical && styles.criticalBackground,
+        ]}>
           <AppText
             weight="extraBold"
-            style={[styles.daysValue, urgent && styles.urgentText]}
+            style={[
+              styles.daysValue,
+              warning && styles.warningText,
+              critical && styles.criticalText,
+            ]}
           >
             {remainingTime.value}
           </AppText>
-          <AppText style={[styles.daysLabel, urgent && styles.urgentText]}>
+          <AppText style={[
+            styles.daysLabel,
+            warning && styles.warningText,
+            critical && styles.criticalText,
+          ]}>
             {remainingTime.label}
           </AppText>
         </View>
@@ -96,7 +128,7 @@ export function ProductExpirationCard({ product }: { product: FoodItem }) {
   );
 }
 
-export function ProductReminderCard() {
+export function ProductReminderCard({ product }: { product: FoodItem }) {
   return (
     <FormCard>
       <View style={styles.reminderRow}>
@@ -106,7 +138,7 @@ export function ProductReminderCard() {
         <View style={styles.reminderDetails}>
           <SectionTitle>RAPPEL</SectionTitle>
           <AppText weight="bold" style={styles.reminderValue}>
-            2 jours avant
+            {product.alertPreference}
           </AppText>
         </View>
         <Ionicons name="checkmark-circle" size={27} color="#00975D" />
@@ -170,9 +202,12 @@ const styles = StyleSheet.create({
     width: 8,
   },
   statusText: { color: "#00975D", fontSize: 12 },
-  urgentBackground: { backgroundColor: "#FDE9E6" },
-  urgentDot: { backgroundColor: "#D94C3D" },
-  urgentText: { color: "#D94C3D" },
+  warningBackground: { backgroundColor: "#FFF4D6" },
+  warningDot: { backgroundColor: "#C58A00" },
+  warningText: { color: "#C58A00" },
+  criticalBackground: { backgroundColor: "#FDE9E6" },
+  criticalDot: { backgroundColor: "#D94C3D" },
+  criticalText: { color: "#D94C3D" },
   infoList: { marginTop: 13 },
   infoRow: {
     alignItems: "center",

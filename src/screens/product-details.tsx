@@ -28,8 +28,8 @@ export default function ProductDetailsScreen() {
         {
           text: "Supprimer",
           style: "destructive",
-          onPress: () => {
-            removeProduct(product.id);
+          onPress: async () => {
+            await removeProduct(product.id);
             router.back();
           },
         },
@@ -56,7 +56,7 @@ export default function ProductDetailsScreen() {
           <ProductHeroCard product={product} />
           <ProductInformationCard product={product} />
           <ProductExpirationCard product={product} />
-          <ProductReminderCard />
+          <ProductReminderCard product={product} />
           <ProductActions onEdit={handleEdit} onDelete={handleDelete} />
         </ScrollView>
       )}

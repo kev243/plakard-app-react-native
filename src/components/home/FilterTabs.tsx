@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { AppText } from "../shared/AppText";
 
@@ -19,8 +18,12 @@ const filterTabs: FilterTab[] = [
   "Autre",
 ];
 
-export default function FilterTabs() {
-  const [activeTab, setActiveTab] = useState<FilterTab>("Tous");
+type Props = {
+  activeTab: FilterTab;
+  onChange: (tab: FilterTab) => void;
+};
+
+export default function FilterTabs({ activeTab, onChange }: Props) {
 
   return (
     <ScrollView
@@ -39,7 +42,7 @@ export default function FilterTabs() {
             key={tab}
             accessibilityRole="button"
             accessibilityState={{ selected: isActive }}
-            onPress={() => setActiveTab(tab)}
+            onPress={() => onChange(tab)}
             style={({ pressed }) => [
               styles.button,
               isActive ? styles.activeButton : styles.inactiveButton,

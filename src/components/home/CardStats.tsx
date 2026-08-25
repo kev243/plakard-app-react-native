@@ -1,13 +1,21 @@
+import { useProducts } from "@/context/ProductsContext";
+import { getDaysUntil } from "@/utils/expiration";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 
 export default function CardStats() {
+  const { products } = useProducts();
+  const expiredCount = products.filter(
+    (product) => getDaysUntil(product.expirationDate) < 0,
+  ).length;
+  const freshCount = products.length - expiredCount;
+
   return (
     <View style={styles.card}>
       <View style={styles.statsRow}>
         <View style={styles.stat}>
           <AppText weight="extraBold" style={styles.value}>
-            24
+            {products.length}
           </AppText>
           <AppText style={styles.label}>Total items</AppText>
         </View>
@@ -19,7 +27,7 @@ export default function CardStats() {
             weight="extraBold"
             style={[styles.value, styles.expiredValue]}
           >
-            3
+            {expiredCount}
           </AppText>
           <AppText style={styles.label}>Produits expirés</AppText>
         </View>
@@ -28,7 +36,7 @@ export default function CardStats() {
 
         <View style={styles.stat}>
           <AppText weight="extraBold" style={[styles.value, styles.freshValue]}>
-            21
+            {freshCount}
           </AppText>
           <AppText style={styles.label}>Produits frais</AppText>
         </View>
