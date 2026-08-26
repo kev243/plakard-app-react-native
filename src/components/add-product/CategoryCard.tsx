@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
-import { categories, Category } from "./options";
+import { categories, Category } from "@/data/product-options";
 import { useTheme } from "@/context/ThemeContext";
 
 type Props = {

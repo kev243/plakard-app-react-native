@@ -1,12 +1,21 @@
+import {
+  AlertPreference,
+  FoodCategory,
+  FoodStorage,
+} from "@/data/product-options";
+
+export const PRODUCT_NAME_MAX_LENGTH = 80;
+export const PRODUCT_QUANTITY_MAX = 999;
+
 export interface FoodItem {
   id: number;
   emoji: string;
   name: string;
   quantity: number;
-  storage: "Fridge" | "Freezer" | "Pantry" | "Autre";
+  storage: FoodStorage;
   expirationDate: string;
-  category: string;
-  alertPreference: string;
+  category: FoodCategory;
+  alertPreference: AlertPreference;
   notificationId: string | null;
   createdAt: string;
   updatedAt: string;
@@ -16,17 +25,3 @@ export type NewFoodItem = Omit<
   FoodItem,
   "id" | "createdAt" | "updatedAt" | "notificationId"
 > & { notificationId?: string | null };
-
-export const storageLabels: Record<FoodItem["storage"], string> = {
-  Fridge: "Réfrigérateur",
-  Freezer: "Congélateur",
-  Pantry: "Garde-manger",
-  Autre: "Autre",
-};
-
-export const categoryLabels: Record<string, string> = {
-  Dairy: "Produits laitiers",
-  Fruit: "Fruits",
-  Vegetable: "Légumes",
-  Meat: "Viandes",
-};

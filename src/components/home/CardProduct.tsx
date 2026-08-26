@@ -1,4 +1,5 @@
-import { FoodItem, storageLabels } from "@/data/products";
+import { storageLabels } from "@/data/product-options";
+import { FoodItem } from "@/data/products";
 import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";

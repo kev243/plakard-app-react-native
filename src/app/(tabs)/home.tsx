@@ -1,7 +1,6 @@
 import CardProduct from "@/components/home/CardProduct";
 import CardStats from "@/components/home/CardStats";
-import FilterTabs from "@/components/home/FilterTabs";
-import { FilterTab } from "@/components/home/FilterTabs";
+import FilterTabs, { FilterTab } from "@/components/home/FilterTabs";
 import { FilterEmptyState } from "@/components/home/FilterEmptyState";
 import HomeHeader from "@/components/home/HomeHeader";
 import { HomeEmptyState } from "@/components/home/HomeEmptyState";

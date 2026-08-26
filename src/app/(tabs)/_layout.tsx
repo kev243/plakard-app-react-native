@@ -1,9 +1,20 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { router, Tabs } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
+import { useNotifications } from "@/context/NotificationsContext";
+import { useEffect, useRef } from "react";
 
 export default function TabLayout() {
   const { colors } = useTheme();
+  const { onboardingReady, onboardingSeen } = useNotifications();
+  const openedOnboarding = useRef(false);
+
+  useEffect(() => {
+    if (onboardingReady && !onboardingSeen && !openedOnboarding.current) {
+      openedOnboarding.current = true;
+      router.push("/notification-onboarding");
+    }
+  }, [onboardingReady, onboardingSeen]);
   return (
     <Tabs
       screenOptions={{

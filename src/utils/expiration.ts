@@ -59,8 +59,8 @@ export function parseDateKey(dateKey: string) {
   return new Date(year, month - 1, day);
 }
 
-export function getDaysUntil(date: string | Date) {
-  const today = new Date();
+export function getDaysUntil(date: string | Date, from = new Date()) {
+  const today = new Date(from);
   today.setHours(0, 0, 0, 0);
   const expiration = typeof date === "string" ? parseDateKey(date) : new Date(date);
   expiration.setHours(0, 0, 0, 0);

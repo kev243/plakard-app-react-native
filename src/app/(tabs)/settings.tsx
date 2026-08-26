@@ -1,10 +1,11 @@
 import { AppText } from "@/components/shared/AppText";
 import { Container } from "@/components/shared/Container";
 import { ThemePreference, useTheme } from "@/context/ThemeContext";
+import { useNotifications } from "@/context/NotificationsContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 
-const options: Array<{ value: ThemePreference; label: string; description: string; icon: keyof typeof Ionicons.glyphMap }> = [
+const options: { value: ThemePreference; label: string; description: string; icon: keyof typeof Ionicons.glyphMap }[] = [
   { value: "system", label: "Automatique", description: "Suit le réglage du téléphone", icon: "phone-portrait-outline" },
   { value: "light", label: "Clair", description: "Toujours utiliser le thème clair", icon: "sunny-outline" },
   { value: "dark", label: "Sombre", description: "Toujours utiliser le thème sombre", icon: "moon-outline" },
@@ -12,6 +13,10 @@ const options: Array<{ value: ThemePreference; label: string; description: strin
 
 export default function SettingsScreen() {
   const { colors, preference, setPreference } = useTheme();
+  const { permission, openNotificationSettings, requestPermission } = useNotifications();
+  const notificationEnabled = permission === "granted";
+  const handleNotificationPress = () =>
+    permission === "undetermined" ? requestPermission() : openNotificationSettings();
   return (
     <Container>
       <View style={styles.header}>
@@ -42,6 +47,42 @@ export default function SettingsScreen() {
           );
         })}
       </View>
+      <View style={[styles.card, styles.notificationCard, { backgroundColor: colors.card }]}>
+        <AppText weight="bold" style={[styles.sectionTitle, { color: colors.textMuted }]}>NOTIFICATIONS</AppText>
+        <View style={styles.notificationHeader}>
+          <View style={[styles.iconBox, { backgroundColor: colors.surfaceSelected }]}>
+            <Ionicons
+              name={notificationEnabled ? "notifications-outline" : "notifications-off-outline"}
+              size={22}
+              color={notificationEnabled ? colors.primary : colors.textSecondary}
+            />
+          </View>
+          <View style={styles.details}>
+            <AppText weight="bold" style={styles.label}>
+              {notificationEnabled ? "Notifications activées" : "Notifications désactivées"}
+            </AppText>
+            <AppText style={[styles.description, { color: colors.textSecondary }]}>
+              {notificationEnabled
+                ? "Tes rappels d’expiration peuvent être envoyés."
+                : "Active-les pour recevoir tes rappels d’expiration."}
+            </AppText>
+          </View>
+        </View>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => void handleNotificationPress()}
+          style={[styles.notificationButton, { backgroundColor: notificationEnabled ? colors.surface : colors.primary }]}
+        >
+          <AppText
+            weight="bold"
+            style={{ color: notificationEnabled ? colors.text : "#FEFEFE" }}
+          >
+            {permission === "undetermined"
+              ? "Autoriser les notifications"
+              : "Ouvrir les réglages système"}
+          </AppText>
+        </Pressable>
+      </View>
     </Container>
   );
 }
@@ -51,10 +92,13 @@ const styles = StyleSheet.create({
   title: { fontSize: 25 },
   subtitle: { fontSize: 14, marginTop: 4 },
   card: { borderRadius: 24, padding: 20 },
+  notificationCard: { marginTop: 16 },
   sectionTitle: { fontSize: 13, letterSpacing: 0.6 },
   row: { alignItems: "center", flexDirection: "row", minHeight: 76 },
   iconBox: { alignItems: "center", borderRadius: 12, height: 44, justifyContent: "center", width: 44 },
   details: { flex: 1, marginLeft: 13 },
   label: { fontSize: 16 },
   description: { fontSize: 12, marginTop: 2 },
+  notificationHeader: { alignItems: "center", flexDirection: "row", marginTop: 18 },
+  notificationButton: { alignItems: "center", borderRadius: 14, marginTop: 18, paddingVertical: 13 },
 });

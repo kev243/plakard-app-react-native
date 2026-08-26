@@ -1,5 +1,6 @@
 import { FormCard, SectionTitle } from "@/components/add-product/FormCard";
-import { categoryLabels, FoodItem, storageLabels } from "@/data/products";
+import { categoryLabels, storageLabels } from "@/data/product-options";
+import { FoodItem } from "@/data/products";
 import { formatRemainingTime, getDaysUntil, getExpirationStatus, parseDateKey } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, View } from "react-native";
@@ -174,7 +175,7 @@ function InfoRow({ icon, label, value, last = false }: InfoRowProps) {
 }
 
 function getCategoryLabel(product: FoodItem) {
-  return categoryLabels[product.category] ?? product.category;
+  return categoryLabels[product.category];
 }
 
 const styles = StyleSheet.create({

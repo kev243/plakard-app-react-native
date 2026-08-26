@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
@@ -17,10 +17,6 @@ export function ExpirationDateCard({ value, onChange }: Props) {
   const [displayedMonth, setDisplayedMonth] = useState(
     () => new Date(value.getFullYear(), value.getMonth(), 1),
   );
-
-  useEffect(() => {
-    setDisplayedMonth(new Date(value.getFullYear(), value.getMonth(), 1));
-  }, [value]);
 
   const calendarDays = useMemo(() => {
     const firstDay = displayedMonth.getDay();

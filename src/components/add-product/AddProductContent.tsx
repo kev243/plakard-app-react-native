@@ -8,7 +8,11 @@ import {
   categories,
   Category,
   StorageLocation,
-} from "@/components/add-product/options";
+  toFoodCategory,
+  toFoodStorage,
+  toFormCategory,
+  toFormStorage,
+} from "@/data/product-options";
 import {
   ProductNameCard,
   QuantityCard,
@@ -20,50 +24,15 @@ import { KeyboardScreen } from "@/components/shared/keyboard-screen";
 import { useProducts } from "@/context/ProductsContext";
 import { getDateKey, getDaysUntil, parseDateKey } from "@/utils/expiration";
 import { router, useLocalSearchParams } from "expo-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
 import { useTheme } from "@/context/ThemeContext";
-
-const formStorageToFoodStorage = {
-  Réfrigérateur: "Fridge",
-  Congélateur: "Freezer",
-  "Garde-manger": "Pantry",
-  Autre: "Autre",
-} as const;
 
 function getTomorrow() {
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   tomorrow.setHours(0, 0, 0, 0);
   return tomorrow;
-}
-
-const formCategoryToFoodCategory: Record<Category, string> = {
-  "Produits laitiers": "Dairy",
-  Fruits: "Fruit",
-  Légumes: "Vegetable",
-  Viandes: "Meat",
-  Conserves: "Canned",
-  Boissons: "Drink",
-  Desserts: "Dessert",
-  Autre: "Autre",
-};
-
-function getFormStorage(storage?: string): StorageLocation {
-  const mapping: Record<string, StorageLocation> = {
-    Fridge: "Réfrigérateur",
-    Freezer: "Congélateur",
-    Pantry: "Garde-manger",
-    Autre: "Autre",
-  };
-  return mapping[storage ?? ""] ?? "Réfrigérateur";
-}
-
-function getFormCategory(category?: string): Category {
-  const entry = Object.entries(formCategoryToFoodCategory).find(
-    ([, value]) => value === category,
-  );
-  return (entry?.[0] as Category | undefined) ?? "Produits laitiers";
 }
 
 export function AddProductContent() {
@@ -76,16 +45,16 @@ export function AddProductContent() {
   const [name, setName] = useState(product?.name ?? "");
   const [quantity, setQuantity] = useState(product?.quantity ?? 1);
   const [storage, setStorage] = useState<StorageLocation>(() =>
-    getFormStorage(product?.storage),
+    toFormStorage(product?.storage ?? "Fridge"),
   );
   const [category, setCategory] = useState<Category>(() =>
-    getFormCategory(product?.category),
+    toFormCategory(product?.category ?? "Dairy"),
   );
   const [expirationDate, setExpirationDate] = useState(() =>
     product ? parseDateKey(product.expirationDate) : getTomorrow(),
   );
   const [alertPreference, setAlertPreference] = useState<AlertPreference>(
-    (product?.alertPreference as AlertPreference) ?? "2 jours avant",
+    product?.alertPreference ?? "2 jours avant",
   );
   const daysUntilExpiration = getDaysUntil(expirationDate);
   const availableAlertOptions = useMemo(
@@ -93,19 +62,13 @@ export function AddProductContent() {
       alertOptions.filter(
         (option) =>
           daysUntilExpiration > 0 &&
-          alertOptionDays[option] <= daysUntilExpiration,
+          alertOptionDays[option] < daysUntilExpiration,
       ),
     [daysUntilExpiration],
   );
-
-  useEffect(() => {
-    if (
-      !availableAlertOptions.includes(alertPreference) &&
-      availableAlertOptions[0]
-    ) {
-      setAlertPreference(availableAlertOptions[0]);
-    }
-  }, [alertPreference, availableAlertOptions]);
+  const effectiveAlertPreference = availableAlertOptions.includes(alertPreference)
+    ? alertPreference
+    : availableAlertOptions[0] ?? "Le jour même";
 
   const hasChanges = useMemo(() => {
     if (!product) return true;
@@ -113,14 +76,14 @@ export function AddProductContent() {
     return (
       name.trim() !== product.name ||
       quantity !== product.quantity ||
-      formStorageToFoodStorage[storage] !== product.storage ||
-      formCategoryToFoodCategory[category] !== product.category ||
+      toFoodStorage(storage) !== product.storage ||
+      toFoodCategory(category) !== product.category ||
       getDateKey(expirationDate) !== product.expirationDate ||
-      alertPreference !== product.alertPreference
+      effectiveAlertPreference !== product.alertPreference
     );
   }, [
-    alertPreference,
     category,
+    effectiveAlertPreference,
     expirationDate,
     name,
     product,
@@ -149,13 +112,13 @@ export function AddProductContent() {
 
       await updateProduct({
         ...product,
-        category: formCategoryToFoodCategory[category],
+        category: toFoodCategory(category),
         expirationDate: getDateKey(expirationDate),
-        alertPreference,
+        alertPreference: effectiveAlertPreference,
         emoji: categoryOption?.icon ?? product.emoji,
         name: name.trim(),
         quantity,
-        storage: formStorageToFoodStorage[storage],
+        storage: toFoodStorage(storage),
       });
 
       Alert.alert(
@@ -168,13 +131,13 @@ export function AddProductContent() {
 
     const categoryOption = categories.find((item) => item.name === category);
     await addProduct({
-      category: formCategoryToFoodCategory[category],
+      category: toFoodCategory(category),
       expirationDate: getDateKey(expirationDate),
-      alertPreference,
+      alertPreference: effectiveAlertPreference,
       emoji: categoryOption?.icon ?? "🌿",
       name: name.trim(),
       quantity,
-      storage: formStorageToFoodStorage[storage],
+      storage: toFoodStorage(storage),
     });
     Alert.alert(
       "Produit ajouté",
@@ -226,7 +189,7 @@ export function AddProductContent() {
             onChange={setExpirationDate}
           />
           <AlertPreferenceCard
-            value={alertPreference}
+            value={effectiveAlertPreference}
             availableOptions={[...availableAlertOptions]}
             onChange={setAlertPreference}
           />

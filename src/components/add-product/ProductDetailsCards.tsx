@@ -2,11 +2,17 @@ import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
 import { AppText } from "../shared/AppText";
 import { FormCard, SectionTitle } from "./FormCard";
-import { categories, StorageLocation, storageOptions } from "./options";
+import {
+  categories,
+  Category,
+  StorageLocation,
+  storageOptions,
+} from "@/data/product-options";
+import { PRODUCT_NAME_MAX_LENGTH, PRODUCT_QUANTITY_MAX } from "@/data/products";
 import { useTheme } from "@/context/ThemeContext";
 
 type ProductNameCardProps = {
-  category: string;
+  category: Category;
   name: string;
   onChangeName: (name: string) => void;
 };
@@ -25,6 +31,7 @@ export function ProductNameCard({
       <View style={styles.productRow}>
         <AppText style={styles.productIcon}>{icon}</AppText>
         <TextInput
+          maxLength={PRODUCT_NAME_MAX_LENGTH}
           value={name}
           onChangeText={onChangeName}
           placeholder="Nom du produit"
@@ -65,8 +72,10 @@ export function QuantityCard({
           </AppText>
           <Pressable
             accessibilityLabel="Augmenter la quantité"
+            accessibilityState={{ disabled: quantity >= PRODUCT_QUANTITY_MAX }}
+            disabled={quantity >= PRODUCT_QUANTITY_MAX}
             hitSlop={8}
-            onPress={() => onChangeQuantity(quantity + 1)}
+            onPress={() => onChangeQuantity(Math.min(PRODUCT_QUANTITY_MAX, quantity + 1))}
           >
             <Ionicons name="add" size={23} color="#00975D" />
           </Pressable>

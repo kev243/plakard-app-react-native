@@ -66,3 +66,16 @@ export async function updateProduct(db: SQLiteDatabase, product: FoodItem) {
 export async function deleteProduct(db: SQLiteDatabase, id: number) {
   await db.runAsync("DELETE FROM products WHERE id = ?", id);
 }
+
+export async function updateProductNotificationId(
+  db: SQLiteDatabase,
+  id: number,
+  notificationId: string | null,
+) {
+  await db.runAsync(
+    "UPDATE products SET notification_id = ?, updated_at = ? WHERE id = ?",
+    notificationId,
+    new Date().toISOString(),
+    id,
+  );
+}
