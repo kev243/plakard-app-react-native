@@ -1,15 +1,35 @@
-import { createProduct, deleteProduct, getProducts, updateProduct as updateStoredProduct, updateProductNotificationId } from "@/database/product-repository";
 import { FoodItem, NewFoodItem } from "@/data/products";
-import { cancelProductNotification, scheduleProductNotification } from "@/services/notifications";
+import {
+  createProduct,
+  deleteProduct,
+  getProducts,
+  updateProductNotificationId,
+  updateProduct as updateStoredProduct,
+} from "@/database/product-repository";
+import {
+  cancelProductNotification,
+  scheduleProductNotification,
+} from "@/services/notifications";
 import { useSQLiteContext } from "expo-sqlite";
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 type ProductsContextValue = {
   products: FoodItem[];
   isLoading: boolean;
   addProduct: (product: NewFoodItem) => Promise<FoodItem>;
   removeProduct: (id: number) => Promise<void>;
-  setNotificationId: (id: number, notificationId: string | null) => Promise<void>;
+  setNotificationId: (
+    id: number,
+    notificationId: string | null,
+  ) => Promise<void>;
   updateProduct: (product: FoodItem) => Promise<void>;
 };
 
@@ -35,54 +55,95 @@ export function ProductsProvider({ children }: PropsWithChildren) {
       }
     };
     void load();
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [db]);
 
-  const addProduct = useCallback(async (product: NewFoodItem) => {
-    let created = await createProduct(db, product);
-    const notificationId = await scheduleProductNotification(created).catch((error) => {
-      console.warn("Le rappel n’a pas pu être programmé", error);
-      return null;
-    });
-    if (notificationId) {
-      created = await updateStoredProduct(db, { ...created, notificationId });
-    }
-    setProducts((current) => [...current, created].sort((a, b) => a.expirationDate.localeCompare(b.expirationDate)));
-    return created;
-  }, [db]);
+  const addProduct = useCallback(
+    async (product: NewFoodItem) => {
+      let created = await createProduct(db, product);
+      const notificationId = await scheduleProductNotification(created).catch(
+        (error) => {
+          console.warn("Le rappel n’a pas pu être programmé", error);
+          return null;
+        },
+      );
+      if (notificationId) {
+        created = await updateStoredProduct(db, { ...created, notificationId });
+      }
+      setProducts((current) =>
+        [...current, created].sort((a, b) =>
+          a.expirationDate.localeCompare(b.expirationDate),
+        ),
+      );
+      return created;
+    },
+    [db],
+  );
 
-  const removeProduct = useCallback(async (id: number) => {
-    const product = products.find((item) => item.id === id);
-    await cancelProductNotification(product?.notificationId ?? null);
-    await deleteProduct(db, id);
-    setProducts((current) => current.filter((product) => product.id !== id));
-  }, [db, products]);
+  const removeProduct = useCallback(
+    async (id: number) => {
+      const product = products.find((item) => item.id === id);
+      await cancelProductNotification(product?.notificationId ?? null);
+      await deleteProduct(db, id);
+      setProducts((current) => current.filter((product) => product.id !== id));
+    },
+    [db, products],
+  );
 
-  const updateProduct = useCallback(async (product: FoodItem) => {
-    await cancelProductNotification(product.notificationId);
-    const candidate = { ...product, notificationId: null };
-    const notificationId = await scheduleProductNotification(candidate).catch((error) => {
-      console.warn("Le rappel n’a pas pu être reprogrammé", error);
-      return null;
-    });
-    const updated = await updateStoredProduct(db, { ...candidate, notificationId });
-    setProducts((current) => current
-      .map((item) => (item.id === updated.id ? updated : item))
-      .sort((a, b) => a.expirationDate.localeCompare(b.expirationDate)));
-  }, [db]);
+  const updateProduct = useCallback(
+    async (product: FoodItem) => {
+      await cancelProductNotification(product.notificationId);
+      const candidate = { ...product, notificationId: null };
+      const notificationId = await scheduleProductNotification(candidate).catch(
+        (error) => {
+          console.warn("Le rappel n’a pas pu être reprogrammé", error);
+          return null;
+        },
+      );
+      const updated = await updateStoredProduct(db, {
+        ...candidate,
+        notificationId,
+      });
+      setProducts((current) =>
+        current
+          .map((item) => (item.id === updated.id ? updated : item))
+          .sort((a, b) => a.expirationDate.localeCompare(b.expirationDate)),
+      );
+    },
+    [db],
+  );
 
-  const setNotificationId = useCallback(async (id: number, notificationId: string | null) => {
-    await updateProductNotificationId(db, id, notificationId);
-    setProducts((current) => current.map((product) =>
-      product.id === id ? { ...product, notificationId } : product,
-    ));
-  }, [db]);
+  const setNotificationId = useCallback(
+    async (id: number, notificationId: string | null) => {
+      await updateProductNotificationId(db, id, notificationId);
+      setProducts((current) =>
+        current.map((product) =>
+          product.id === id ? { ...product, notificationId } : product,
+        ),
+      );
+    },
+    [db],
+  );
 
   const value = useMemo(
     () => ({
-      products, isLoading, addProduct, removeProduct, setNotificationId, updateProduct,
+      products,
+      isLoading,
+      addProduct,
+      removeProduct,
+      setNotificationId,
+      updateProduct,
     }),
-    [addProduct, isLoading, products, removeProduct, setNotificationId, updateProduct],
+    [
+      addProduct,
+      isLoading,
+      products,
+      removeProduct,
+      setNotificationId,
+      updateProduct,
+    ],
   );
 
   return (

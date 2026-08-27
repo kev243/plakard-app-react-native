@@ -31,18 +31,27 @@ type NotificationsContextValue = {
 };
 
 const ONBOARDING_KEY = "notification_onboarding_seen";
-const NotificationsContext = createContext<NotificationsContextValue | null>(null);
+const NotificationsContext = createContext<NotificationsContextValue | null>(
+  null,
+);
 
 export function NotificationsProvider({ children }: PropsWithChildren) {
   const { products, isLoading, setNotificationId } = useProducts();
-  const [permission, setPermission] = useState<NotificationPermission>("undetermined");
+  const [permission, setPermission] =
+    useState<NotificationPermission>("undetermined");
   const [onboardingSeen, setOnboardingSeen] = useState(false);
   const [onboardingReady, setOnboardingReady] = useState(false);
   const scheduling = useRef(new Set<number>());
 
   const refreshPermission = useCallback(async () => {
     const result = await Notifications.getPermissionsAsync();
-    setPermission(result.granted ? "granted" : result.status === "denied" ? "denied" : "undetermined");
+    setPermission(
+      result.granted
+        ? "granted"
+        : result.status === "denied"
+          ? "denied"
+          : "undetermined",
+    );
   }, []);
 
   useEffect(() => {
@@ -55,12 +64,16 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
       setOnboardingReady(true);
     });
 
-    const appStateSubscription = AppState.addEventListener("change", (state) => {
-      if (state === "active") void refreshPermission();
-    });
-    const responseSubscription = Notifications.addNotificationResponseReceivedListener(
-      (response) => redirectFromNotification(response.notification),
+    const appStateSubscription = AppState.addEventListener(
+      "change",
+      (state) => {
+        if (state === "active") void refreshPermission();
+      },
     );
+    const responseSubscription =
+      Notifications.addNotificationResponseReceivedListener((response) =>
+        redirectFromNotification(response.notification),
+      );
     const lastResponse = Notifications.getLastNotificationResponse();
     if (lastResponse?.notification) {
       redirectFromNotification(lastResponse.notification);
@@ -76,11 +89,13 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (permission !== "granted" || isLoading) return;
     for (const product of products) {
-      if (product.notificationId || scheduling.current.has(product.id)) continue;
+      if (product.notificationId || scheduling.current.has(product.id))
+        continue;
       scheduling.current.add(product.id);
       void scheduleProductNotification(product)
         .then((notificationId) => {
-          if (notificationId) return setNotificationId(product.id, notificationId);
+          if (notificationId)
+            return setNotificationId(product.id, notificationId);
         })
         .finally(() => scheduling.current.delete(product.id));
     }
@@ -111,22 +126,39 @@ export function NotificationsProvider({ children }: PropsWithChildren) {
       refreshPermission,
       requestPermission,
     }),
-    [markOnboardingSeen, onboardingReady, onboardingSeen, permission, refreshPermission, requestPermission],
+    [
+      markOnboardingSeen,
+      onboardingReady,
+      onboardingSeen,
+      permission,
+      refreshPermission,
+      requestPermission,
+    ],
   );
 
-  return <NotificationsContext.Provider value={value}>{children}</NotificationsContext.Provider>;
+  return (
+    <NotificationsContext.Provider value={value}>
+      {children}
+    </NotificationsContext.Provider>
+  );
 }
 
 function redirectFromNotification(notification: Notifications.Notification) {
   const productId = notification.request.content.data?.productId;
   if (typeof productId === "number" || typeof productId === "string") {
-    router.push({ pathname: "/product/[id]", params: { id: String(productId) } });
+    router.push({
+      pathname: "/product/[id]",
+      params: { id: String(productId) },
+    });
   }
 }
 
 export function useNotifications() {
   const context = useContext(NotificationsContext);
-  if (!context) throw new Error("useNotifications doit être utilisé dans NotificationsProvider");
+  if (!context)
+    throw new Error(
+      "useNotifications doit être utilisé dans NotificationsProvider",
+    );
   return context;
 }
 

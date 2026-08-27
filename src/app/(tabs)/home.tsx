@@ -1,17 +1,17 @@
 import CardProduct from "@/components/home/CardProduct";
 import CardStats from "@/components/home/CardStats";
-import FilterTabs, { FilterTab } from "@/components/home/FilterTabs";
 import { FilterEmptyState } from "@/components/home/FilterEmptyState";
-import HomeHeader from "@/components/home/HomeHeader";
+import FilterTabs, { FilterTab } from "@/components/home/FilterTabs";
 import { HomeEmptyState } from "@/components/home/HomeEmptyState";
+import HomeHeader from "@/components/home/HomeHeader";
 import { Container } from "@/components/shared/Container";
 import { useProducts } from "@/context/ProductsContext";
+import { useTheme } from "@/context/ThemeContext";
 import { FoodItem } from "@/data/products";
 import { getDaysUntil, getExpirationStatus } from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import { useTheme } from "@/context/ThemeContext";
 import { Pressable, StyleSheet, View } from "react-native";
 
 export default function HomeScreen() {
@@ -33,10 +33,7 @@ export default function HomeScreen() {
           <HomeEmptyState />
         ) : (
           <>
-            <FilterTabs
-              activeTab={activeFilter}
-              onChange={setActiveFilter}
-            />
+            <FilterTabs activeTab={activeFilter} onChange={setActiveFilter} />
             {filteredProducts.length > 0 ? (
               <CardProduct products={filteredProducts} />
             ) : (
@@ -69,7 +66,9 @@ const storageByFilter: Partial<Record<FilterTab, FoodItem["storage"]>> = {
 function matchesFilter(product: FoodItem, filter: FilterTab) {
   if (filter === "Tous") return true;
   if (filter === "Urgent") {
-    return getExpirationStatus(getDaysUntil(product.expirationDate)) !== "fresh";
+    return (
+      getExpirationStatus(getDaysUntil(product.expirationDate)) !== "fresh"
+    );
   }
   return product.storage === storageByFilter[filter];
 }

@@ -1,7 +1,7 @@
+import { useNotifications } from "@/context/NotificationsContext";
+import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { router, Tabs } from "expo-router";
-import { useTheme } from "@/context/ThemeContext";
-import { useNotifications } from "@/context/NotificationsContext";
 import { useEffect, useRef } from "react";
 
 export default function TabLayout() {
@@ -21,13 +21,16 @@ export default function TabLayout() {
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
         headerShown: false,
-        tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
+        tabBarStyle: {
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
+        },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
-          title: "Home",
+          title: "Accueil",
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="home-outline" color={color} />
           ),
@@ -36,7 +39,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="calendar"
         options={{
-          title: "Calendar",
+          title: "Calendrier",
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="calendar-outline" color={color} />
           ),
@@ -45,7 +48,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: "Settings",
+          title: "Réglages",
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} name="settings-outline" color={color} />
           ),

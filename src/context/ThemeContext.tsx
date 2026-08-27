@@ -1,7 +1,7 @@
 import { ColorScheme, themes } from "@/theme/colors";
+import Storage from "expo-sqlite/kv-store";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
-import Storage from "expo-sqlite/kv-store";
 import {
   createContext,
   PropsWithChildren,
@@ -73,6 +73,7 @@ export function ThemeProvider({ children }: PropsWithChildren) {
 
 export function useTheme() {
   const context = useContext(ThemeContext);
-  if (!context) throw new Error("useTheme doit être utilisé dans ThemeProvider");
+  if (!context)
+    throw new Error("useTheme doit être utilisé dans ThemeProvider");
   return context;
 }

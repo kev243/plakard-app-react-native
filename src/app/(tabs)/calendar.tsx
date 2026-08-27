@@ -3,11 +3,11 @@ import { ExpiryCalendar } from "@/components/calendar/ExpiryCalendar";
 import { AppText } from "@/components/shared/AppText";
 import { Container } from "@/components/shared/Container";
 import { useProducts } from "@/context/ProductsContext";
+import { useTheme } from "@/context/ThemeContext";
 import { getDateKey } from "@/utils/expiration";
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { useTheme } from "@/context/ThemeContext";
 
 export default function CalendarScreen() {
   const { products } = useProducts();
@@ -19,9 +19,7 @@ export default function CalendarScreen() {
 
   const selectedProducts = useMemo(() => {
     const selectedKey = getDateKey(selectedDate);
-    return products.filter(
-      (product) => product.expirationDate === selectedKey,
-    );
+    return products.filter((product) => product.expirationDate === selectedKey);
   }, [products, selectedDate]);
 
   const changeMonth = (offset: number) => {

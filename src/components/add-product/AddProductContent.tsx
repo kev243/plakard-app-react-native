@@ -2,6 +2,16 @@ import { AlertPreferenceCard } from "@/components/add-product/AlertPreferenceCar
 import { CategoryCard } from "@/components/add-product/CategoryCard";
 import { ExpirationDateCard } from "@/components/add-product/ExpirationDateCard";
 import {
+  ProductNameCard,
+  QuantityCard,
+  StorageCard,
+} from "@/components/add-product/ProductDetailsCards";
+import { AppText } from "@/components/shared/AppText";
+import { Container } from "@/components/shared/Container";
+import { KeyboardScreen } from "@/components/shared/keyboard-screen";
+import { useProducts } from "@/context/ProductsContext";
+import { useTheme } from "@/context/ThemeContext";
+import {
   alertOptionDays,
   alertOptions,
   AlertPreference,
@@ -13,20 +23,10 @@ import {
   toFormCategory,
   toFormStorage,
 } from "@/data/product-options";
-import {
-  ProductNameCard,
-  QuantityCard,
-  StorageCard,
-} from "@/components/add-product/ProductDetailsCards";
-import { AppText } from "@/components/shared/AppText";
-import { Container } from "@/components/shared/Container";
-import { KeyboardScreen } from "@/components/shared/keyboard-screen";
-import { useProducts } from "@/context/ProductsContext";
 import { getDateKey, getDaysUntil, parseDateKey } from "@/utils/expiration";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
-import { useTheme } from "@/context/ThemeContext";
 
 function getTomorrow() {
   const tomorrow = new Date();
@@ -66,9 +66,11 @@ export function AddProductContent() {
       ),
     [daysUntilExpiration],
   );
-  const effectiveAlertPreference = availableAlertOptions.includes(alertPreference)
+  const effectiveAlertPreference = availableAlertOptions.includes(
+    alertPreference,
+  )
     ? alertPreference
-    : availableAlertOptions[0] ?? "Le jour même";
+    : (availableAlertOptions[0] ?? "Le jour même");
 
   const hasChanges = useMemo(() => {
     if (!product) return true;
@@ -107,9 +109,9 @@ export function AddProductContent() {
       return;
     }
 
-    if (product) {
-      const categoryOption = categories.find((item) => item.name === category);
+    const categoryOption = categories.find((item) => item.name === category);
 
+    if (product) {
       await updateProduct({
         ...product,
         category: toFoodCategory(category),
@@ -129,7 +131,6 @@ export function AddProductContent() {
       return;
     }
 
-    const categoryOption = categories.find((item) => item.name === category);
     await addProduct({
       category: toFoodCategory(category),
       expirationDate: getDateKey(expirationDate),

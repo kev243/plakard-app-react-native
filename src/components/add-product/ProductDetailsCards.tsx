@@ -1,7 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
-import { AppText } from "../shared/AppText";
-import { FormCard, SectionTitle } from "./FormCard";
+import { useTheme } from "@/context/ThemeContext";
 import {
   categories,
   Category,
@@ -9,7 +6,10 @@ import {
   storageOptions,
 } from "@/data/product-options";
 import { PRODUCT_NAME_MAX_LENGTH, PRODUCT_QUANTITY_MAX } from "@/data/products";
-import { useTheme } from "@/context/ThemeContext";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import { AppText } from "../shared/AppText";
+import { FormCard, SectionTitle } from "./FormCard";
 
 type ProductNameCardProps = {
   category: Category;
@@ -58,7 +58,11 @@ export function QuantityCard({
     <FormCard style={styles.quantityCard}>
       <SectionTitle>QUANTITÉ</SectionTitle>
       <View style={styles.quantityRow}>
-        <AppText style={[styles.quantityPrompt, { color: colors.textSecondary }]}>Combien d’unités?</AppText>
+        <AppText
+          style={[styles.quantityPrompt, { color: colors.textSecondary }]}
+        >
+          Combien d’unités?
+        </AppText>
         <View style={[styles.stepper, { backgroundColor: colors.surface }]}>
           <Pressable
             accessibilityLabel="Diminuer la quantité"
@@ -67,7 +71,10 @@ export function QuantityCard({
           >
             <Ionicons name="remove" size={22} color={colors.text} />
           </Pressable>
-          <AppText weight="extraBold" style={[styles.quantityValue, { color: colors.text }]}>
+          <AppText
+            weight="extraBold"
+            style={[styles.quantityValue, { color: colors.text }]}
+          >
             {quantity}
           </AppText>
           <Pressable
@@ -75,7 +82,9 @@ export function QuantityCard({
             accessibilityState={{ disabled: quantity >= PRODUCT_QUANTITY_MAX }}
             disabled={quantity >= PRODUCT_QUANTITY_MAX}
             hitSlop={8}
-            onPress={() => onChangeQuantity(Math.min(PRODUCT_QUANTITY_MAX, quantity + 1))}
+            onPress={() =>
+              onChangeQuantity(Math.min(PRODUCT_QUANTITY_MAX, quantity + 1))
+            }
           >
             <Ionicons name="add" size={23} color="#00975D" />
           </Pressable>
@@ -104,19 +113,24 @@ export function StorageCard({ storage, onChangeStorage }: StorageCardProps) {
               onPress={() => onChangeStorage(option.name)}
               style={[
                 styles.storageOption,
-                selected && [styles.storageSelected, { backgroundColor: colors.selected }],
+                selected && [
+                  styles.storageSelected,
+                  { backgroundColor: colors.selected },
+                ],
               ]}
             >
               <AppText style={styles.storageIcon}>{option.icon}</AppText>
               <AppText
                 weight="bold"
                 numberOfLines={1}
-                style={
-                  [
-                    selected ? styles.storageSelectedText : styles.storageText,
-                    { color: selected ? colors.selectedText : colors.textSecondary },
-                  ]
-                }
+                style={[
+                  selected ? styles.storageSelectedText : styles.storageText,
+                  {
+                    color: selected
+                      ? colors.selectedText
+                      : colors.textSecondary,
+                  },
+                ]}
               >
                 {option.label}
               </AppText>

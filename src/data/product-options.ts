@@ -45,17 +45,27 @@ export const categoryLabels = Object.fromEntries(
 ) as Record<FoodCategory, Category>;
 
 export function toFoodStorage(storage: StorageLocation): FoodStorage {
-  return storageOptions.find((option) => option.name === storage)?.value ?? "Fridge";
+  return (
+    storageOptions.find((option) => option.name === storage)?.value ?? "Fridge"
+  );
 }
 
 export function toFormStorage(storage: FoodStorage): StorageLocation {
-  return storageOptions.find((option) => option.value === storage)?.name ?? "Réfrigérateur";
+  return (
+    storageOptions.find((option) => option.value === storage)?.name ??
+    "Réfrigérateur"
+  );
 }
 
 export function toFoodCategory(category: Category): FoodCategory {
-  return categories.find((option) => option.name === category)?.value ?? "Dairy";
+  return (
+    categories.find((option) => option.name === category)?.value ?? "Dairy"
+  );
 }
 
 export function toFormCategory(category: FoodCategory): Category {
-  return categories.find((option) => option.value === category)?.name ?? "Produits laitiers";
+  return (
+    categories.find((option) => option.value === category)?.name ??
+    "Produits laitiers"
+  );
 }
