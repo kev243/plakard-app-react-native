@@ -254,15 +254,39 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingBottom: 20, paddingTop: 8 },
-  scrollContent: { paddingBottom: 28 },
-  title: { fontSize: 25 },
-  subtitle: { fontSize: 14, marginTop: 4 },
-  card: { borderRadius: 24, padding: 20 },
-  notificationCard: { marginTop: 16 },
-  legalCard: { marginTop: 16 },
-  sectionTitle: { fontSize: 13, letterSpacing: 0.6 },
-  row: { alignItems: "center", flexDirection: "row", minHeight: 76 },
+  header: {
+    paddingBottom: 20,
+    paddingTop: 8,
+  },
+  scrollContent: {
+    paddingBottom: 28,
+  },
+  title: {
+    fontSize: 25,
+  },
+  subtitle: {
+    fontSize: 14,
+    marginTop: 4,
+  },
+  card: {
+    borderRadius: 24,
+    padding: 20,
+  },
+  notificationCard: {
+    marginTop: 16,
+  },
+  legalCard: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontSize: 13,
+    letterSpacing: 0.6,
+  },
+  row: {
+    alignItems: "center",
+    flexDirection: "row",
+    minHeight: 76,
+  },
   iconBox: {
     alignItems: "center",
     borderRadius: 12,
@@ -270,9 +294,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 44,
   },
-  details: { flex: 1, marginLeft: 13 },
-  label: { fontSize: 16 },
-  description: { fontSize: 12, marginTop: 2 },
+  details: {
+    flex: 1,
+    marginLeft: 13,
+  },
+  label: {
+    fontSize: 16,
+  },
+  description: {
+    fontSize: 12,
+    marginTop: 2,
+  },
   notificationHeader: {
     alignItems: "center",
     flexDirection: "row",

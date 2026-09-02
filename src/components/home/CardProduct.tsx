@@ -1,10 +1,14 @@
+import { useTheme } from "@/context/ThemeContext";
 import { storageLabels } from "@/data/product-options";
 import { FoodItem } from "@/data/products";
-import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
+import {
+  formatRemainingTime,
+  getDaysUntil,
+  getExpirationStatus,
+} from "@/utils/expiration";
 import { router } from "expo-router";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 export default function CardProduct({ products }: { products: FoodItem[] }) {
   const { colors } = useTheme();
@@ -37,7 +41,12 @@ export default function CardProduct({ products }: { products: FoodItem[] }) {
               pressed && styles.pressedCard,
             ]}
           >
-            <View style={[styles.emojiContainer, { backgroundColor: colors.surface }]}>
+            <View
+              style={[
+                styles.emojiContainer,
+                { backgroundColor: colors.surface },
+              ]}
+            >
               <AppText style={styles.emoji}>{item.emoji}</AppText>
             </View>
 
@@ -51,11 +60,13 @@ export default function CardProduct({ products }: { products: FoodItem[] }) {
               </AppText>
             </View>
 
-            <View style={[
-              styles.expiry,
-              isWarning && styles.warningExpiry,
-              isCritical && styles.criticalExpiry,
-            ]}>
+            <View
+              style={[
+                styles.expiry,
+                isWarning && styles.warningExpiry,
+                isCritical && styles.criticalExpiry,
+              ]}
+            >
               <AppText
                 weight="extraBold"
                 style={[
@@ -133,14 +144,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 6,
   },
-  warningExpiry: { backgroundColor: "#FFF4D6" },
-  criticalExpiry: { backgroundColor: "#FDE9E6" },
+  warningExpiry: {
+    backgroundColor: "#FFF4D6",
+  },
+  criticalExpiry: {
+    backgroundColor: "#FDE9E6",
+  },
   days: {
     color: "#00975d",
     fontSize: 18,
   },
-  warningText: { color: "#C58A00" },
-  criticalText: { color: "#D94C3D" },
+  warningText: {
+    color: "#C58A00",
+  },
+  criticalText: {
+    color: "#D94C3D",
+  },
   expiryLabel: {
     color: "#00975d",
     fontSize: 10,

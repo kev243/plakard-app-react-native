@@ -9,9 +9,14 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.kev243.plakard",
-      "icon": "./assets/images/icon-fridge-v1.png"
+      "icon": "./assets/images/icon-fridge-v1.png",
+      "supportsTablet": false,
+      "config": {
+        "usesNonExemptEncryption": false
+      }
     },
     "android": {
+      "package": "com.kev243.plakard",
       "adaptiveIcon": {
         "backgroundColor": "#FBF9EE",
         "foregroundImage": "./assets/images/android-icon-fridge-foreground.png"

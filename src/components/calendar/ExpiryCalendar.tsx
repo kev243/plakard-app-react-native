@@ -1,10 +1,14 @@
+import { useTheme } from "@/context/ThemeContext";
 import { FoodItem } from "@/data/products";
-import { getDateKey, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
+import {
+  getDateKey,
+  getDaysUntil,
+  getExpirationStatus,
+} from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 const weekDays = ["Di", "Lu", "Ma", "Me", "Je", "Ve", "Sa"];
 
@@ -78,7 +82,10 @@ export function ExpiryCalendar({
       <View style={styles.grid}>
         {weekDays.map((day) => (
           <View key={day} style={styles.cell}>
-            <AppText weight="bold" style={[styles.weekDay, { color: colors.textMuted }]}>
+            <AppText
+              weight="bold"
+              style={[styles.weekDay, { color: colors.textMuted }]}
+            >
               {day}
             </AppText>
           </View>
@@ -107,8 +114,14 @@ export function ExpiryCalendar({
                 onPress={() => onSelectDate(date)}
                 style={[
                   styles.dayButton,
-                  today && [styles.today, { backgroundColor: colors.surfaceSelected }],
-                  selected && [styles.selectedDay, { backgroundColor: colors.selected }],
+                  today && [
+                    styles.today,
+                    { backgroundColor: colors.surfaceSelected },
+                  ],
+                  selected && [
+                    styles.selectedDay,
+                    { backgroundColor: colors.selected },
+                  ],
                 ]}
               >
                 <AppText
@@ -116,7 +129,10 @@ export function ExpiryCalendar({
                   style={[
                     styles.dayText,
                     { color: colors.text },
-                    selected && [styles.selectedDayText, { color: colors.selectedText }],
+                    selected && [
+                      styles.selectedDayText,
+                      { color: colors.selectedText },
+                    ],
                   ]}
                 >
                   {day}
@@ -162,8 +178,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 42,
   },
-  monthLabel: { fontSize: 19, textTransform: "capitalize" },
-  grid: { flexDirection: "row", flexWrap: "wrap", marginTop: 12 },
+  monthLabel: {
+    fontSize: 19,
+    textTransform: "capitalize",
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    marginTop: 12,
+  },
   cell: {
     alignItems: "center",
     height: 45,
@@ -180,7 +203,9 @@ const styles = StyleSheet.create({
   },
   today: {},
   selectedDay: {},
-  dayText: { fontSize: 15 },
+  dayText: {
+    fontSize: 15,
+  },
   selectedDayText: {},
   marker: {
     backgroundColor: "#00975D",
@@ -190,7 +215,13 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 5,
   },
-  warningMarker: { backgroundColor: "#C58A00" },
-  criticalMarker: { backgroundColor: "#D94C3D" },
-  selectedMarker: { backgroundColor: "#FEFEFE" },
+  warningMarker: {
+    backgroundColor: "#C58A00",
+  },
+  criticalMarker: {
+    backgroundColor: "#D94C3D",
+  },
+  selectedMarker: {
+    backgroundColor: "#FEFEFE",
+  },
 });

@@ -72,5 +72,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 15,
   },
-  retryLabel: { color: "#FEFEFE", fontSize: 16, fontWeight: "700" },
+  retryLabel: {
+    color: "#FEFEFE",
+    fontSize: 16,
+    fontWeight: "700",
+  },
 });

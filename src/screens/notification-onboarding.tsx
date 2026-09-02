@@ -3,7 +3,7 @@ import { Container } from "@/components/shared/Container";
 import { useNotifications } from "@/context/NotificationsContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { Href, router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 
 export function NotificationOnboardingScreen() {
@@ -13,7 +13,7 @@ export function NotificationOnboardingScreen() {
   const finish = async (request: boolean) => {
     if (request) await requestPermission();
     await markOnboardingSeen();
-    router.back();
+    router.replace("/(tabs)/home" as Href);
   };
 
   return (

@@ -1,7 +1,7 @@
+import { useTheme } from "@/context/ThemeContext";
 import { router } from "expo-router";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 export function HomeEmptyState() {
   const { colors } = useTheme();
@@ -54,8 +54,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 88,
   },
-  icon: { fontSize: 45 },
-  title: { fontSize: 20, marginTop: 18 },
+  icon: {
+    fontSize: 45,
+  },
+  title: {
+    fontSize: 20,
+    marginTop: 18,
+  },
   description: {
     fontSize: 14,
     lineHeight: 20,
@@ -68,6 +73,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 14,
   },
-  pressedButton: { opacity: 0.82 },
-  buttonText: { color: "#FEFEFE", fontSize: 15 },
+  pressedButton: {
+    opacity: 0.82,
+  },
+  buttonText: {
+    color: "#FEFEFE",
+    fontSize: 15,
+  },
 });

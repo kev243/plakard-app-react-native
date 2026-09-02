@@ -1,10 +1,14 @@
+import { useTheme } from "@/context/ThemeContext";
 import { storageLabels } from "@/data/product-options";
 import { FoodItem } from "@/data/products";
-import { formatRemainingTime, getDaysUntil, getExpirationStatus } from "@/utils/expiration";
+import {
+  formatRemainingTime,
+  getDaysUntil,
+  getExpirationStatus,
+} from "@/utils/expiration";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   product: FoodItem;
@@ -22,9 +26,15 @@ export function CalendarProductCard({ product, onPress }: Props) {
       accessibilityLabel={`Voir les détails de ${product.name}`}
       accessibilityRole="button"
       onPress={onPress}
-      style={({ pressed }) => [styles.card, { backgroundColor: colors.card }, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        { backgroundColor: colors.card },
+        pressed && styles.pressed,
+      ]}
     >
-      <View style={[styles.emojiContainer, { backgroundColor: colors.surface }]}>
+      <View
+        style={[styles.emojiContainer, { backgroundColor: colors.surface }]}
+      >
         <AppText style={styles.emoji}>{product.emoji}</AppText>
       </View>
       <View style={styles.details}>
@@ -42,7 +52,8 @@ export function CalendarProductCard({ product, onPress }: Props) {
           style={[
             styles.remaining,
             status === "warning" && styles.warningText,
-            (status === "critical" || status === "expired") && styles.criticalText,
+            (status === "critical" || status === "expired") &&
+              styles.criticalText,
           ]}
         >
           {remaining.value}
@@ -66,7 +77,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 5,
   },
-  pressed: { opacity: 0.8, transform: [{ scale: 0.99 }] },
+  pressed: {
+    opacity: 0.8,
+    transform: [{ scale: 0.99 }],
+  },
   emojiContainer: {
     alignItems: "center",
     borderRadius: 13,
@@ -74,12 +88,33 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 52,
   },
-  emoji: { fontSize: 28 },
-  details: { flex: 1, marginLeft: 12 },
-  name: { fontSize: 15 },
-  meta: { fontSize: 11, marginTop: 4 },
-  expiryDetails: { alignItems: "center", flexDirection: "row", gap: 4 },
-  remaining: { color: "#00975D", fontSize: 18 },
-  warningText: { color: "#C58A00" },
-  criticalText: { color: "#D94C3D" },
+  emoji: {
+    fontSize: 28,
+  },
+  details: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  name: {
+    fontSize: 15,
+  },
+  meta: {
+    fontSize: 11,
+    marginTop: 4,
+  },
+  expiryDetails: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 4,
+  },
+  remaining: {
+    color: "#00975D",
+    fontSize: 18,
+  },
+  warningText: {
+    color: "#C58A00",
+  },
+  criticalText: {
+    color: "#D94C3D",
+  },
 });

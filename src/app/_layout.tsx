@@ -1,4 +1,6 @@
 import { AppErrorFallback } from "@/components/shared/AppErrorFallback";
+import { SplashScreenController } from "@/components/shared/SplashScreenController";
+import { AppOnboardingProvider } from "@/context/AppOnboardingContext";
 import { NotificationsProvider } from "@/context/NotificationsContext";
 import { ProductsProvider } from "@/context/ProductsContext";
 import { ThemeProvider } from "@/context/ThemeContext";
@@ -13,7 +15,6 @@ import { useFonts } from "expo-font";
 import { ErrorBoundaryProps, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SQLiteProvider } from "expo-sqlite";
-import { useEffect } from "react";
 import {
   initialWindowMetrics,
   SafeAreaProvider,
@@ -34,12 +35,6 @@ export default function RootLayout() {
     "Nunito-ExtraBold": Nunito_800ExtraBold,
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
   if (!loaded && !error) {
     return null;
   }
@@ -49,30 +44,42 @@ export default function RootLayout() {
       <ThemeProvider>
         <SQLiteProvider databaseName="plakard.db" onInit={migrateDatabase}>
           <ProductsProvider>
-            <NotificationsProvider>
-              <Stack initialRouteName="(tabs)">
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="add-product"
-                  options={{
-                    presentation: "fullScreenModal",
-                    headerShown: false,
-                  }}
-                />
-                <Stack.Screen
-                  name="product/[id]"
-                  options={{ headerShown: false }}
-                />
-                <Stack.Screen
-                  name="notification-onboarding"
-                  options={{
-                    presentation: "fullScreenModal",
-                    headerShown: false,
-                    gestureEnabled: false,
-                  }}
-                />
-              </Stack>
-            </NotificationsProvider>
+            <AppOnboardingProvider>
+              <NotificationsProvider>
+                <SplashScreenController />
+                <Stack initialRouteName="(tabs)">
+                  <Stack.Screen name="index" options={{ headerShown: false }} />
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                  <Stack.Screen
+                    name="add-product"
+                    options={{
+                      presentation: "fullScreenModal",
+                      headerShown: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="product/[id]"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="onboarding"
+                    options={{
+                      presentation: "fullScreenModal",
+                      headerShown: false,
+                      gestureEnabled: false,
+                    }}
+                  />
+                  <Stack.Screen
+                    name="notification-onboarding"
+                    options={{
+                      presentation: "fullScreenModal",
+                      headerShown: false,
+                      gestureEnabled: false,
+                    }}
+                  />
+                </Stack>
+              </NotificationsProvider>
+            </AppOnboardingProvider>
           </ProductsProvider>
         </SQLiteProvider>
       </ThemeProvider>
