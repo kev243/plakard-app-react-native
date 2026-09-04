@@ -1,134 +1,134 @@
 # Plakard
 
-> Application mobile de suivi des dates d’expiration, pensée pour rendre la gestion des produits simple, visuelle et locale.
+> A mobile app for tracking expiration dates, designed to make product management simple, visual, and local.
 
-![Couverture de Plakard](./assets/images/plakard-readme.png)
+![Plakard cover](./assets/images/plakard-readme.png)
 
-## À propos
+## About
 
-Plakard aide à suivre les produits stockés au réfrigérateur, au congélateur, dans le garde-manger ou ailleurs. L’application met en évidence les prochaines expirations, programme des rappels locaux et rassemble les produits dans une vue calendrier.
+Plakard helps track products stored in the fridge, freezer, pantry, or elsewhere. The app highlights upcoming expiration dates, schedules local reminders, and groups products in a calendar view.
 
-Cette première version fonctionne entièrement sur l’appareil : les produits sont enregistrés dans SQLite et les rappels sont programmés avec le système de notifications du téléphone.
+This first version works entirely on the device: products are stored in SQLite and reminders are scheduled using the phone's notification system.
 
-## Fonctionnalités
+## Features
 
-- ajout, consultation, modification et suppression d’un produit ;
-- classement par lieu de stockage et catégorie ;
-- filtres par emplacement et niveau d’urgence ;
-- statistiques dynamiques sur l’état du placard ;
-- calendrier des dates d’expiration ;
-- rappels locaux configurables ;
-- ouverture de la fiche produit depuis une notification ;
-- thème clair, sombre ou synchronisé avec le système ;
-- états dédiés lorsqu’aucun produit ne correspond à la vue courante.
+- add, view, edit, and delete a product;
+- organize products by storage location and category;
+- filter by location and urgency level;
+- dynamic statistics about the state of the pantry;
+- expiration date calendar;
+- configurable local reminders;
+- open a product page from a notification;
+- light, dark, or system theme;
+- dedicated states when no product matches the current view.
 
-## Logique métier
+## Business logic
 
-### État d’expiration
+### Expiration status
 
-Le statut d’un produit est calculé à partir du nombre de jours séparant aujourd’hui de sa date d’expiration.
+A product's status is calculated from the number of days between today and its expiration date.
 
-| Situation | Statut | Présentation |
+| Situation | Status | Display |
 | --- | --- | --- |
-| Date passée | Expiré | Rouge |
-| 0 ou 1 jour restant | Critique | Rouge |
-| 2 à 4 jours restants | À surveiller | Jaune |
-| 5 jours ou plus | Frais | Vert |
+| Past date | Expired | Red |
+| 0 or 1 day remaining | Critical | Red |
+| 2 to 4 days remaining | Watch | Yellow |
+| 5 days or more | Fresh | Green |
 
-Pour les échéances longues, l’interface affiche une durée lisible en mois ou en années plutôt qu’un nombre important de jours.
+For expiration dates far in the future, the interface displays an easy-to-read duration in months or years instead of a large number of days.
 
-### Dates et alertes
+### Dates and alerts
 
-- Une date d’expiration doit obligatoirement être dans le futur.
-- Les préférences d’alerte impossibles sont automatiquement indisponibles.
-- Les rappels sont programmés à **9 h**, selon la préférence choisie : le jour même, 2 jours avant, 5 jours avant ou une semaine avant.
-- Une date de rappel déjà passée n’est jamais programmée.
+- An expiration date must be in the future.
+- Alert preferences that are not possible are automatically disabled.
+- Reminders are scheduled at **9:00 AM**, based on the selected preference: the same day, 2 days before, 5 days before, or one week before.
+- A reminder date that has already passed is never scheduled.
 
-### Cycle de vie d’une notification
+### Notification lifecycle
 
 ```text
-Ajout du produit
-  → enregistrement SQLite
-  → programmation du rappel
-  → sauvegarde du notification_id
+Product added
+  → saved in SQLite
+  → reminder scheduled
+  → notification_id saved
 
-Modification
-  → annulation de l’ancien rappel
-  → mise à jour SQLite
-  → programmation du nouveau rappel
+Edit
+  → previous reminder canceled
+  → SQLite updated
+  → new reminder scheduled
 
-Suppression
-  → annulation du rappel
-  → suppression SQLite
+Delete
+  → reminder canceled
+  → product deleted from SQLite
 ```
 
-L’autorisation n’est demandée que depuis l’onboarding ou les réglages. Si elle est accordée plus tard, Plakard tente de programmer les rappels manquants des produits existants.
+Permission is only requested from the onboarding or settings. If permission is granted later, Plakard tries to schedule missing reminders for existing products.
 
-## Architecture technique
+## Technical architecture
 
-Le projet sépare les routes, les composants visuels, l’état global, la persistance et les règles métier.
+The project separates routes, visual components, global state, persistence, and business rules.
 
 ```text
 src/
-├── app/          Routes Expo Router et navigation
-├── screens/      Composition des écrans principaux
-├── components/   Cartes et éléments d’interface réutilisables
-├── context/      Produits, notifications et thème
-├── data/         Modèles, options et correspondances typées
-├── database/     Migrations et repository SQLite
-├── services/     Planification des notifications
-├── theme/        Palettes claire et sombre
-└── utils/        Calculs et formatage des dates
+├── app/          Expo Router routes and navigation
+├── screens/      Main screen composition
+├── components/   Reusable cards and interface elements
+├── context/      Products, notifications, and theme
+├── data/         Models, options, and typed mappings
+├── database/     SQLite migrations and repository
+├── services/     Notification scheduling
+├── theme/        Light and dark color palettes
+└── utils/        Date calculations and formatting
 ```
 
-### Responsabilités principales
+### Main responsibilities
 
-| Couche | Rôle |
+| Layer | Role |
 | --- | --- |
-| `ProductsContext` | Synchronise l’état React, SQLite et les notifications lors des opérations CRUD. |
-| `NotificationsContext` | Gère l’autorisation, l’onboarding, la reprise de l’application et la navigation depuis un rappel. |
-| `ThemeContext` | Résout le thème actif et conserve la préférence dans le stockage clé-valeur SQLite. |
-| `product-repository` | Regroupe les requêtes SQL liées aux produits. |
-| `migrations` | Versionne le schéma et protège les données existantes lors de son évolution. |
-| `product-options` | Centralise les catégories, lieux, alertes, labels et conversions UI ↔ persistance. |
+| `ProductsContext` | Keeps React state, SQLite, and notifications in sync during CRUD operations. |
+| `NotificationsContext` | Manages permission, onboarding, app resume, and navigation from a reminder. |
+| `ThemeContext` | Resolves the active theme and stores the preference in SQLite key-value storage. |
+| `product-repository` | Groups SQL queries related to products. |
+| `migrations` | Versions the schema and protects existing data as it changes. |
+| `product-options` | Centralizes categories, locations, alerts, labels, and UI ↔ persistence conversions. |
 
-## Persistance locale
+## Local persistence
 
-La table `products` contient notamment :
+The `products` table includes:
 
-| Champ | Utilité |
+| Field | Purpose |
 | --- | --- |
-| `name` | Nom du produit, limité à 80 caractères |
-| `quantity` | Quantité comprise entre 1 et 999 |
-| `storage` | Lieu de stockage normalisé |
-| `category` | Catégorie persistante typée |
-| `expiration_date` | Date locale au format `YYYY-MM-DD` |
-| `alert_preference` | Décalage choisi pour le rappel |
-| `notification_id` | Identifiant permettant d’annuler ou remplacer le rappel |
-| `created_at` / `updated_at` | Dates techniques de création et modification |
+| `name` | Product name, limited to 80 characters |
+| `quantity` | Quantity between 1 and 999 |
+| `storage` | Normalized storage location |
+| `category` | Typed persistent category |
+| `expiration_date` | Local date in `YYYY-MM-DD` format |
+| `alert_preference` | Selected reminder offset |
+| `notification_id` | Identifier used to cancel or replace the reminder |
+| `created_at` / `updated_at` | Technical creation and update dates |
 
-SQLite fonctionne en mode WAL. Le schéma applique des contraintes sur les valeurs importantes et un index accélère le tri par date d’expiration.
+SQLite runs in WAL mode. The schema applies constraints to important values, and an index makes sorting by expiration date faster.
 
-## Fiabilité
+## Reliability
 
-- Une boundary Expo Router affiche un écran de secours en cas d’échec critique au démarrage.
-- Les migrations SQLite normalisent les anciennes données avant d’appliquer les contraintes récentes.
-- Les erreurs de programmation d’un rappel ne bloquent pas l’enregistrement d’un produit.
-- Les calculs de dates et de notifications sont isolés dans des fonctions pures.
-- Les correspondances entre valeurs affichées et persistées proviennent d’une source unique et typée.
+- An Expo Router boundary displays a fallback screen if a critical startup error occurs.
+- SQLite migrations normalize old data before applying recent constraints.
+- Reminder scheduling errors do not prevent a product from being saved.
+- Date and notification calculations are isolated in pure functions.
+- Mappings between displayed and stored values come from a single typed source.
 
-## Tests et qualité
+## Tests and quality
 
-Les tests unitaires couvrent actuellement :
+Unit tests currently cover:
 
-- le parsing des dates SQLite ;
-- les années bissextiles et changements d’heure ;
-- le calcul des jours restants ;
-- la date et l’heure des rappels ;
-- les changements de mois ;
-- le rejet des rappels déjà passés.
+- SQLite date parsing;
+- leap years and daylight saving time changes;
+- remaining day calculations;
+- reminder dates and times;
+- month changes;
+- rejection of reminders scheduled in the past.
 
-Commandes de contrôle utilisées pendant le développement :
+Commands used for checks during development:
 
 ```bash
 npm test
@@ -138,14 +138,14 @@ npx tsc --noEmit
 
 ## Technologies
 
-- Expo SDK 57 et React Native 0.86 ;
-- Expo Router ;
-- TypeScript strict ;
-- Expo SQLite ;
-- Expo Notifications ;
-- Jest avec `jest-expo` ;
-- Nunito et Expo Vector Icons.
+- Expo SDK 57 and React Native 0.86;
+- Expo Router;
+- strict TypeScript;
+- Expo SQLite;
+- Expo Notifications;
+- Jest with `jest-expo`;
+- Nunito and Expo Vector Icons.
 
-## Périmètre de la V1
+## V1 scope
 
-Plakard privilégie actuellement une expérience locale, rapide et respectueuse des données personnelles. La synchronisation cloud, le scan de codes-barres, les photos, l’historique de consommation et les statistiques avancées restent hors du périmètre de cette première version.
+Plakard currently focuses on a local, fast, and privacy-friendly experience. Cloud synchronization, barcode scanning, photos, consumption history, and advanced statistics remain outside the scope of this first version.
