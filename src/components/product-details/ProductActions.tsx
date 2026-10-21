@@ -1,7 +1,7 @@
+import { useTheme } from "@/context/ThemeContext";
 import { Ionicons } from "@expo/vector-icons";
 import { Pressable, StyleSheet } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 type Props = {
   onDelete: () => void;
@@ -77,7 +77,10 @@ const styles = StyleSheet.create({
     minHeight: 54,
   },
   editButton: {},
-  deleteButton: { borderColor: "#F1C5BF", borderWidth: 1 },
+  deleteButton: {
+    borderColor: "#F1C5BF",
+    borderWidth: 1,
+  },
   text: { fontSize: 15 },
   deleteText: { color: "#D94C3D" },
   pressed: { opacity: 0.7 },

@@ -1,12 +1,10 @@
 import { ProductActions } from "@/components/product-details/ProductActions";
-import {
-  ProductExpirationCard,
-  ProductHeroCard,
-  ProductInformationCard,
-  ProductReminderCard,
-} from "@/components/product-details/ProductDetailsCards";
 import { ProductDetailsHeader } from "@/components/product-details/ProductDetailsHeader";
-import { ProductNotFound } from "@/components/product-details/ProductNotFound";
+import ProductExpirationCard from "@/components/product-details/ProductExpirationCard";
+import ProductHeroCard from "@/components/product-details/ProductHeroCard";
+import ProductInformationCard from "@/components/product-details/ProductInformationCard";
+import ProductNotFound from "@/components/product-details/ProductNotFound";
+import ProductReminderCard from "@/components/product-details/ProductReminderCard";
 import { Container } from "@/components/shared/Container";
 import { useProducts } from "@/context/ProductsContext";
 import { router, useLocalSearchParams } from "expo-router";

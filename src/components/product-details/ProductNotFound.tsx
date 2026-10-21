@@ -1,8 +1,8 @@
+import { useTheme } from "@/context/ThemeContext";
 import { StyleSheet, View } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
-export function ProductNotFound() {
+export default function ProductNotFound() {
   const { colors } = useTheme();
   return (
     <View style={styles.container}>
