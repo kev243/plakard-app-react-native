@@ -12,28 +12,21 @@ import { KeyboardScreen } from "@/components/shared/keyboard-screen";
 import { useProducts } from "@/context/ProductsContext";
 import { useTheme } from "@/context/ThemeContext";
 import {
-  alertOptionDays,
-  alertOptions,
   AlertPreference,
-  categories,
   Category,
   StorageLocation,
-  toFoodCategory,
-  toFoodStorage,
-  toFormCategory,
-  toFormStorage,
 } from "@/data/product-options";
-import { getDateKey, getDaysUntil, parseDateKey } from "@/utils/expiration";
+import {
+  createInitialProductForm,
+  getAvailableAlertOptions,
+  getEffectiveAlertPreference,
+  hasProductFormChanged,
+  toProductPayload,
+  validateProductForm,
+} from "@/helpers/product-form.helpers";
 import { router, useLocalSearchParams } from "expo-router";
 import { useMemo, useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, View } from "react-native";
-
-function getTomorrow() {
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  tomorrow.setHours(0, 0, 0, 0);
-  return tomorrow;
-}
 
 export function AddProductContent() {
   const { colors } = useTheme();
@@ -41,86 +34,64 @@ export function AddProductContent() {
   const { products, addProduct, updateProduct } = useProducts();
   const product = products.find((item) => item.id === Number(id));
   const isEditing = Boolean(product);
+  const initialForm = createInitialProductForm(product);
 
-  const [name, setName] = useState(product?.name ?? "");
-  const [quantity, setQuantity] = useState(product?.quantity ?? 1);
-  const [storage, setStorage] = useState<StorageLocation>(() =>
-    toFormStorage(product?.storage ?? "Fridge"),
-  );
-  const [category, setCategory] = useState<Category>(() =>
-    toFormCategory(product?.category ?? "Dairy"),
-  );
-  const [expirationDate, setExpirationDate] = useState(() =>
-    product ? parseDateKey(product.expirationDate) : getTomorrow(),
+  const [name, setName] = useState(initialForm.name);
+  const [quantity, setQuantity] = useState(initialForm.quantity);
+  const [storage, setStorage] = useState<StorageLocation>(initialForm.storage);
+  const [category, setCategory] = useState<Category>(initialForm.category);
+  const [expirationDate, setExpirationDate] = useState(
+    initialForm.expirationDate,
   );
   const [alertPreference, setAlertPreference] = useState<AlertPreference>(
-    product?.alertPreference ?? "2 jours avant",
+    initialForm.alertPreference,
   );
-  const daysUntilExpiration = getDaysUntil(expirationDate);
   const availableAlertOptions = useMemo(
-    () =>
-      alertOptions.filter(
-        (option) =>
-          daysUntilExpiration > 0 &&
-          alertOptionDays[option] < daysUntilExpiration,
-      ),
-    [daysUntilExpiration],
+    () => getAvailableAlertOptions(expirationDate),
+    [expirationDate],
   );
-  const effectiveAlertPreference = availableAlertOptions.includes(
+  const effectiveAlertPreference = getEffectiveAlertPreference(
     alertPreference,
-  )
-    ? alertPreference
-    : (availableAlertOptions[0] ?? "Le jour même");
+    availableAlertOptions,
+  );
 
-  const hasChanges = useMemo(() => {
-    if (!product) return true;
+  const form = useMemo(
+    () => ({
+      name,
+      quantity,
+      storage,
+      category,
+      expirationDate,
+      alertPreference,
+    }),
+    [alertPreference, category, expirationDate, name, quantity, storage],
+  );
 
-    return (
-      name.trim() !== product.name ||
-      quantity !== product.quantity ||
-      toFoodStorage(storage) !== product.storage ||
-      toFoodCategory(category) !== product.category ||
-      getDateKey(expirationDate) !== product.expirationDate ||
-      effectiveAlertPreference !== product.alertPreference
-    );
-  }, [
-    category,
-    effectiveAlertPreference,
-    expirationDate,
-    name,
-    product,
-    quantity,
-    storage,
-  ]);
+  const hasChanges = useMemo(
+    () =>
+      hasProductFormChanged(form, product, effectiveAlertPreference),
+    [effectiveAlertPreference, form, product],
+  );
 
   const submitDisabled = isEditing && !hasChanges;
 
   const handleSubmit = async () => {
-    if (!name.trim()) {
-      Alert.alert("Information manquante", "Ajoute le nom du produit.");
+    const validationError = validateProductForm(form);
+    if (validationError) {
+      Alert.alert(validationError.title, validationError.message);
       return;
     }
 
-    if (daysUntilExpiration <= 0) {
-      Alert.alert(
-        "Date invalide",
-        "Choisis une date d’expiration dans le futur.",
-      );
-      return;
-    }
-
-    const categoryOption = categories.find((item) => item.name === category);
+    const productPayload = toProductPayload(
+      form,
+      effectiveAlertPreference,
+      product?.emoji,
+    );
 
     if (product) {
       await updateProduct({
         ...product,
-        category: toFoodCategory(category),
-        expirationDate: getDateKey(expirationDate),
-        alertPreference: effectiveAlertPreference,
-        emoji: categoryOption?.icon ?? product.emoji,
-        name: name.trim(),
-        quantity,
-        storage: toFoodStorage(storage),
+        ...productPayload,
       });
 
       Alert.alert(
@@ -131,15 +102,7 @@ export function AddProductContent() {
       return;
     }
 
-    await addProduct({
-      category: toFoodCategory(category),
-      expirationDate: getDateKey(expirationDate),
-      alertPreference: effectiveAlertPreference,
-      emoji: categoryOption?.icon ?? "🌿",
-      name: name.trim(),
-      quantity,
-      storage: toFoodStorage(storage),
-    });
+    await addProduct(productPayload);
     Alert.alert(
       "Produit ajouté",
       `${name.trim()} a été ajouté à ton Plakard.`,
