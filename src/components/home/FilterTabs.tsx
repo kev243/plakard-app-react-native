@@ -1,6 +1,6 @@
+import { useTheme } from "@/context/ThemeContext";
 import { Pressable, ScrollView, StyleSheet } from "react-native";
 import { AppText } from "../shared/AppText";
-import { useTheme } from "@/context/ThemeContext";
 
 export type FilterTab =
   | "Tous"
@@ -57,7 +57,9 @@ export default function FilterTabs({ activeTab, onChange }: Props) {
               weight="semiBold"
               style={[
                 isActive ? styles.activeText : styles.inactiveText,
-                { color: isActive ? colors.selectedText : colors.textSecondary },
+                {
+                  color: isActive ? colors.selectedText : colors.textSecondary,
+                },
               ]}
             >
               {tab}
@@ -73,6 +75,8 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 0,
     flexShrink: 0,
+    marginHorizontal: -24,
+    paddingHorizontal: 24,
   },
   content: {
     gap: 6,
@@ -85,10 +89,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     flexShrink: 0,
   },
-  activeButton: {
-  },
-  inactiveButton: {
-  },
+  activeButton: {},
+  inactiveButton: {},
   activeText: {
     fontSize: 13,
   },
