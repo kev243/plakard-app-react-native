@@ -105,8 +105,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     marginBottom: 10,
-    shadowOpacity: 0.1,
-    shadowRadius: 0.1,
     elevation: 2,
   },
   pressedCard: {
